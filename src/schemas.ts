@@ -40,7 +40,7 @@ import {
   readFileSafe,
   safeReadDir,
   sizeOfAsync,
-} from "./fileManagement";
+} from "../fileManagement";
 
 const url = (): TfsUrl => ({
   type: "url",
