@@ -4,7 +4,7 @@ import {
   map,
   ok,
   type Result,
-} from "~/types/result";
+} from "~/cms/type-fs/result";
 import {
   type Path,
   type TfsValue,

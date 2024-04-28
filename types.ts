@@ -1,6 +1,6 @@
 import { type ZodObject, type ZodRawShape, type z } from "zod";
-import { type Result } from "~/types/result";
 import { type Brand } from "./typeSafety";
+import { type Result } from "./result";
 
 export type TfsValue<Value = unknown, Error = unknown> = {
     readonly parse: Parser<Value, Error>;

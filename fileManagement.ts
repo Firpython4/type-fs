@@ -9,25 +9,9 @@ import { type StringWithInnerSubstring } from "~/cms/type-fs/typeSafety";
 import { type Locale, locales } from "~/localization/localization";
 import { promisify } from "util";
 import sizeOf from "image-size";
-import { error, ok, okAsync } from "../../types/result";
-import { type CollectionId } from "../cmsCompiler";
+import { error, ok, okAsync } from "./result";
 import { type Path } from "./types";
 import { readdir } from "node:fs/promises";
-
-export function getCollectionsFromDirectories(directories: Dirent[]) {
-  return directories.map(async (directoryEntity) => {
-    const directoryPath = getPath(directoryEntity);
-    const id = directoryPath.split(`collections${path.sep}`)[1]!;
-    const directoryEntities = await fileSystem.readdir(directoryPath, {
-      withFileTypes: true,
-    });
-    return {
-      id: id as CollectionId,
-      path: directoryPath,
-      directoryEntities,
-    };
-  });
-}
 
 export async function getAllCollections() {
   return await fileSystem.readdir(path.join(process.cwd(), collectionsPath), {
@@ -36,17 +20,6 @@ export async function getAllCollections() {
 }
 export async function getFileRelative(filePath: string) {
   return await fileSystem.readFile(path.join(process.cwd(), filePath));
-}
-
-export function getMarkdownFilesForLocales(directoryEntries: Dirent[]) {
-  const files = new Map<Locale, Dirent>();
-  for (const locale of locales) {
-    const file = directoryEntries.find((file) => file.name === `${locale}.md`);
-    if (file) {
-      files.set(locale, file);
-    }
-  }
-  return files;
 }
 
 export const absoluteToRelativePath = (imagePath: PublicFolderPath) =>
