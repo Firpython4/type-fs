@@ -66,12 +66,12 @@ const url = (): TfsUrl => ({
     return ok({
       type: "url",
       name: getName(pathToParse),
-      value: urlOkValue,
+      url: urlOkValue,
     });
   },
 });
 
-const image = <T extends string>(imagePathForSplit: T): TfsImage<T> => ({
+const image = (imagePathForSplit?: string): TfsImage => ({
   type: "image",
   parse: async (inPath: Path) => {
     const extensions = [".jpg", ".webp", ".png", ".svg", ".ico"];
@@ -81,10 +81,15 @@ const image = <T extends string>(imagePathForSplit: T): TfsImage<T> => ({
       return error("invalid extension");
     }
 
-    const url = inPath.replaceAll("\\", "/").split(imagePathForSplit)[1];
-
-    if (!url) {
-      return error("image is not in the configured folder");
+    let url = inPath.replaceAll("\\", "/");
+    if (imagePathForSplit)
+    {
+      const split = url.split(imagePathForSplit)[1];
+      if (!split)
+      {
+        return error("image is not in the configured folder");
+      }
+      url = split;
     }
 
     const size = await sizeOfAsync(inPath);
@@ -111,7 +116,7 @@ const image = <T extends string>(imagePathForSplit: T): TfsImage<T> => ({
       name: getName(inPath),
       width: sizeValue.width,
       height: sizeValue.height,
-      url: url as `${string}${typeof imagePathForSplit}/${string}`,
+      url: url,
     });
   },
 });

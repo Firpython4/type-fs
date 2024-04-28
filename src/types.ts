@@ -12,10 +12,10 @@ type TfsEntity = {
 
 export type Parser<OkType, ErrorType> = ((path: Path) => Promise<Result<OkType, ErrorType>>);
 
-type ImageError = string;
-export type TfsImage<T extends string> = {
+type ImageError = string ;
+export type TfsImage = {
     readonly type: "image";
-} & TfsValue<Image<T>, ImageError>
+} & TfsValue<Image, ImageError>
 
 export type TfsMarkdownWithContent<T extends ZodRawShape> = TfsValue<{
     html: string;
@@ -62,11 +62,11 @@ export interface TfsUnion<T extends Readonly<[...TfsValue<unknown, unknown>[]]>>
     readonly type: "union";
 }
 
-type Url = { type: "url", value: string } & TfsEntity
+type Url = { type: "url", url: string } & TfsEntity
 
-type Image<ImagePathSplitType extends string> = {
+type Image = {
     type: "image",
-    url: `${string}${ImagePathSplitType}/${string}`
+    url: string,
     width: number,
     height: number
 } & TfsEntity;
