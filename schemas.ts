@@ -71,7 +71,7 @@ const url = (): TfsUrl => ({
   },
 });
 
-const image = <T extends string> (imagePathForSplit: T): TfsImage<T> => ({
+const image = <T extends string>(imagePathForSplit: T): TfsImage<T> => ({
   type: "image",
   parse: async (inPath: Path) => {
     const extensions = [".jpg", ".webp", ".png", ".svg", ".ico"];
