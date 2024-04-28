@@ -388,7 +388,7 @@ const markdown = <T extends string>(namePattern?: T): TfsMarkdown => ({
   parse: parseMarkdown(namePattern),
 });
 
-export const tcms = {
+export const typefs = {
   url,
   markdown,
   image,
