@@ -4,7 +4,7 @@ import {
   map,
   ok,
   type Result,
-} from "~/cms/type-fs/result";
+} from "./result";
 import {
   type Path,
   type TfsValue,
@@ -40,7 +40,7 @@ import {
   readFileSafe,
   safeReadDir,
   sizeOfAsync,
-} from "../fileManagement";
+} from "./fileManagement";
 
 const url = (): TfsUrl => ({
   type: "url",
