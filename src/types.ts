@@ -3,6 +3,7 @@ import { type Brand } from "./typeSafety";
 import { type Result } from "./result";
 
 export type TfsValue<Value = unknown, Error = unknown> = {
+    error: (handler: (error: Error) => void) => TfsValue<Value, Error>;
     readonly parse: Parser<Value, Error>;
 }
 

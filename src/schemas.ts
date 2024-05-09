@@ -26,6 +26,8 @@ import {
   type ObjectWithName,
   type Markdown,
   type MarkdownError,
+  TfsArrayWithName,
+  TfsObjectWithName,
 } from "./types";
 import { readFile } from "node:fs/promises";
 import { z, type ZodObject, type ZodRawShape } from "zod";
@@ -42,84 +44,102 @@ import {
   sizeOfAsync,
 } from "./fileManagement";
 
-const url = (): TfsUrl => ({
-  type: "url",
-  parse: async (pathToParse) => {
-    const extension = ".url";
-    const ext = path.extname(pathToParse);
-    if (ext !== extension) {
-      return error("invalid extension");
-    }
-
-    const url = await getUrlFromPath(pathToParse);
-
-    if (!url.wasResultSuccessful) {
-      return error(url.errorValue);
-    }
-
-    const urlOkValue = url.okValue;
-    const parseResult = z.string().url().safeParse(urlOkValue);
-    if (!parseResult.success) {
-      return error("invalid url");
-    }
-
-    return ok({
-      type: "url",
-      name: getName(pathToParse),
-      url: urlOkValue,
-    });
-  },
-});
-
-const image = (imagePathForSplit?: string): TfsImage => ({
-  type: "image",
-  parse: async (inPath: Path) => {
-    const extensions = [".jpg", ".webp", ".png", ".svg", ".ico"];
-    const extension = path.extname(inPath);
-
-    if (!extensions.includes(extension)) {
-      return error("invalid extension");
-    }
-
-    let url = inPath.replaceAll("\\", "/");
-    if (imagePathForSplit)
+const url = (): TfsUrl => {
+  const schema: TfsUrl = {
+    error: handler => withErrorHandler(schema.parse, handler),
+    type: "url",
+    parse: async (pathToParse) =>
     {
-      const split = url.split(imagePathForSplit)[1];
-      if (!split)
+      const extension = ".url";
+      const ext = path.extname(pathToParse);
+      if (ext !== extension)
       {
-        return error("image is not in the configured folder");
+        return error("invalid extension");
       }
-      url = split;
-    }
 
-    const size = await sizeOfAsync(inPath);
+      const url = await getUrlFromPath(pathToParse);
 
-    if (!size.wasResultSuccessful) {
-      return error(`Unable to read file ${inPath}`);
-    }
+      if (!url.wasResultSuccessful)
+      {
+        return error(url.errorValue);
+      }
 
-    const sizeValue = size.okValue;
+      const urlOkValue = url.okValue;
+      const parseResult = z.string().url().safeParse(urlOkValue);
+      if (!parseResult.success)
+      {
+        return error("invalid url");
+      }
 
-    if (!sizeValue) {
-      return error(`Unable to read file ${inPath}`);
-    }
+      return ok({
+        type: "url",
+        name: getName(pathToParse),
+        url: urlOkValue,
+      });
+    },
+  };
+  return schema;
+};
 
-    if (sizeValue.width === undefined) {
-      return error(`Invalid image width for ${inPath}`);
-    }
-    if (sizeValue.height === undefined) {
-      return error(`Invalid image height for ${inPath}`);
-    }
+const image = (imagePathForSplit?: string): TfsImage => {
+  const schema: TfsImage = {
+    type: "image",
+    error: handler => withErrorHandler(schema.parse, handler),
+    parse: async (inPath: Path) =>
+    {
+      const extensions = [".jpg", ".webp", ".png", ".svg", ".ico"];
+      const extension = path.extname(inPath);
 
-    return ok({
-      type: "image",
-      name: getName(inPath),
-      width: sizeValue.width,
-      height: sizeValue.height,
-      url: url,
-    });
-  },
-});
+      if (!extensions.includes(extension))
+      {
+        return error("invalid extension");
+      }
+
+      let url = inPath.replaceAll("\\", "/");
+      if (imagePathForSplit)
+      {
+        const split = url.split(imagePathForSplit)[1];
+        if (!split)
+        {
+          return error("image is not in the configured folder");
+        }
+        url = split;
+      }
+
+      const size = await sizeOfAsync(inPath);
+
+      if (!size.wasResultSuccessful)
+      {
+        return error(`Unable to read file ${inPath}`);
+      }
+
+      const sizeValue = size.okValue;
+
+      if (!sizeValue)
+      {
+        return error(`Unable to read file ${inPath}`);
+      }
+
+      if (sizeValue.width === undefined)
+      {
+        return error(`Invalid image width for ${inPath}`);
+      }
+      if (sizeValue.height === undefined)
+      {
+        return error(`Invalid image height for ${inPath}`);
+      }
+
+      return ok({
+        type: "image",
+        name: getName(inPath),
+        width: sizeValue.width,
+        height: sizeValue.height,
+        url: url,
+      });
+    },
+  };
+  return schema;
+};
 
 function getName(inPath: Path) {
   return path.basename(inPath, path.extname(inPath));
@@ -129,21 +149,28 @@ const arrayWithName =
   <T extends TfsValue<unknown, unknown>>(
     parse: Parser<InferOk<TfsArray<T>>, InferError<TfsArray<T>>>,
   ): ArrayWithName<T> =>
-  (namePattern?: string) => ({
-    type: "arrayWithName",
-    async parse(inPath: Path) {
-      const name = path.basename(inPath);
-      if (namePattern !== undefined) {
-        const matches = name.match(namePattern);
-        if (matches === null) {
-          return error("name does not match" as const);
+  (namePattern?: string) => {
+    const schema: TfsArrayWithName<T> = {
+      type: "arrayWithName" as const,
+      error: handler => withErrorHandler(schema.parse, handler),
+      async parse(inPath: Path)
+      {
+        const name = path.basename(inPath);
+        if (namePattern !== undefined)
+        {
+          const matches = name.match(namePattern);
+          if (matches === null)
+          {
+            return error("name does not match" as const);
+          }
         }
-      }
 
-      const parseResult = await parse(inPath);
-      return map(parseResult, (okParse) => ({ name, parsed: okParse }));
-    },
-  });
+        const parseResult = await parse(inPath);
+        return map(parseResult, (okParse) => ({ name, parsed: okParse }));
+      },
+    };
+    return (schema);
+  };
 
 const arrayParse =
   <ElementType extends TfsValue>(
@@ -175,11 +202,15 @@ const arrayParse =
 
 const array = <ElementType extends TfsValue<unknown, unknown>>(
   element: ElementType,
-): TfsArray<ElementType> => ({
-  type: "array",
-  parse: arrayParse(element),
-  withName: arrayWithName(arrayParse(element)),
-});
+): TfsArray<ElementType> => {
+  const schema: TfsArray<ElementType> = {
+    type: "array",
+    error: handler => withErrorHandler(schema.parse, handler),
+    parse: arrayParse(element),
+    withName: arrayWithName(arrayParse(element)),
+  };
+    return schema;
+  };
 
 export async function getUrl(imageOrUrlPath: Path) {
   return (await readFile(imageOrUrlPath)).toString();
@@ -196,21 +227,28 @@ const objectWithName =
       "no matches" | typeof couldNotReadDirectory
     >,
   ): ObjectWithName<T> =>
-  (namePattern?: string) => ({
-    type: "objectWithName",
-    async parse(inPath: Path) {
-      const name = path.basename(inPath);
-      if (namePattern !== undefined) {
-        const matches = name.match(namePattern);
-        if (matches === null) {
-          return error("name does not match" as const);
+  (namePattern?: string) => {
+    const schema: TfsObjectWithName<T> = {
+      type: "objectWithName",
+      error: handler => withErrorHandler(schema.parse, handler),
+      async parse(inPath: Path)
+      {
+        const name = path.basename(inPath);
+        if (namePattern !== undefined)
+        {
+          const matches = name.match(namePattern);
+          if (matches === null)
+          {
+            return error("name does not match" as const);
+          }
         }
-      }
 
-      const parseResult = await parse(inPath);
-      return map(parseResult, (okParse) => ({ name, parsed: okParse }));
-    },
-  });
+        const parseResult = await parse(inPath);
+        return map(parseResult, (okParse) => ({ name, parsed: okParse }));
+      },
+    };
+    return schema;
+  };
 
 const objectParse =
   <T extends TfsRecord>(
@@ -265,35 +303,48 @@ const objectParse =
     ) as InferTfsObject<T>;
     return ok(spread);
   };
-const object = <T extends TfsRecord>(fields: T): TfsObject<T> => ({
-  type: "object",
-  parse: objectParse(fields),
-  withName: objectWithName(objectParse(fields)),
-});
+const object = <T extends TfsRecord>(fields: T): TfsObject<T> => {
+  const schema = {
+    type: "object" as const,
+    error: (handler: (error: InferError<TfsObject<T>>) => void) => withErrorHandler(schema.parse, handler),
+    parse: objectParse(fields),
+    withName: objectWithName(objectParse(fields)),
+  };
+
+  return schema;
+};
 
 const union = <T extends Readonly<[...TfsValue<unknown, unknown>[]]>>(
   ...types: T
-): TfsUnion<T> => ({
-  type: "union",
-  async parse(path: Path) {
-    for (const [option, type] of types.entries()) {
-      const typeSafeIndex = option as ArrayIndices<T>;
+): TfsUnion<T> => {
+  const schema: TfsUnion<T> = {
+    type: "union",
+    error: handler => withErrorHandler(schema.parse, handler),
+    async parse(path: Path)
+    {
+      for (const [option, type] of types.entries())
+      {
+        const typeSafeIndex = option as ArrayIndices<T>;
 
-      const parseResult = await type.parse(path);
+        const parseResult = await type.parse(path);
 
-      if (!parseResult.wasResultSuccessful) {
-        continue;
+        if (!parseResult.wasResultSuccessful)
+        {
+          continue;
+        }
+
+        return ok({
+          option: typeSafeIndex,
+          value: parseResult.okValue as InferOk<T[ArrayIndices<T>]>,
+        });
       }
 
-      return ok({
-        option: typeSafeIndex,
-        value: parseResult.okValue as InferOk<T[ArrayIndices<T>]>,
-      });
-    }
+      return error("no matches" as const);
+    },
+  };
 
-    return error("no matches" as const);
-  },
-});
+    return schema;
+  };
 
 const parseMarkdownWithContent =
   <T extends ZodRawShape>(matters: ZodObject<T>, namePattern?: string) =>
@@ -359,10 +410,15 @@ const parseMarkdownWithContent =
 
 const withMatter: MarkdownWithMatter =
   (nameWithPattern) =>
-  <T extends ZodRawShape>(matters: ZodObject<T>) => ({
-    type: "markdownWithContent",
-    parse: parseMarkdownWithContent(matters, nameWithPattern),
-  });
+  <T extends ZodRawShape>(matters: ZodObject<T>) => {
+    const schema = {
+      type: "markdownWithContent" as const,
+      error: handler => withErrorHandler(schema.parse, handler),
+      parse: parseMarkdownWithContent(matters, nameWithPattern),
+    };
+
+    return schema;
+  };
 
 const parseMarkdown = (namePattern?: string): Parser<Markdown, MarkdownError> =>
   promisify((inPath: Path) => {
@@ -387,11 +443,16 @@ const parseMarkdown = (namePattern?: string): Parser<Markdown, MarkdownError> =>
     });
   });
 
-const markdown = <T extends string>(namePattern?: T): TfsMarkdown => ({
-  type: "markdown",
-  withMatter: withMatter(namePattern),
-  parse: parseMarkdown(namePattern),
-});
+const markdown = <T extends string>(namePattern?: T): TfsMarkdown => {
+  const schema: TfsMarkdown = {
+    type: "markdown" as const,
+    error: handler => withErrorHandler(schema.parse, handler),
+    withMatter: withMatter(namePattern),
+    parse: parseMarkdown(namePattern),
+  };
+
+  return schema;
+};
 
 export const typefs = {
   url,
@@ -401,3 +462,19 @@ export const typefs = {
   object,
   union,
 };
+function withErrorHandler<OkValue, ErrorValue>(parser: Parser<OkValue, ErrorValue>, handler: (error: ErrorValue) => void)
+{
+  return {
+    ...parser,
+    parse: async (path: Path) => {
+      const result = await parser(path);
+      if (!result.wasResultSuccessful)
+      {
+        handler(result.errorValue);
+      }
+
+      return result;
+    }
+  }
+}
+
