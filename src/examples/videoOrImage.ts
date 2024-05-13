@@ -1,5 +1,5 @@
-import { typefs } from "~/schemas";
-import { InferOk } from "~/types";
+import { typefs } from "../schemas";
+import { type InferOk } from "../types";
 
 const videoOrImageSchema = typefs.union(typefs.image("public/"), typefs.url());
 
