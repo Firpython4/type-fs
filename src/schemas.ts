@@ -52,7 +52,7 @@ const url = (): TfsUrl => {
     parse: async (pathToParse) =>
     {
       const extension = ".url";
-      const ext = path.extname(pathToParse);
+      const ext = path.extname(pathToParse).toLowerCase();
       if (ext !== extension)
       {
         return error("invalid extension");
@@ -88,6 +88,8 @@ const image = (imagePathForSplit?: string): TfsImage => {
     error: handler => withErrorHandler(schema, handler),
     parse: async (inPath: Path) =>
     {
+      const extensions = [".jpg", ".webp", ".png", ".svg", ".ico", ".jpeg"];
+      const extension = path.extname(inPath).toLowerCase();
 
       if (!extensions.includes(extension))
       {
@@ -349,7 +351,7 @@ const parseMarkdownWithContent =
   <T extends ZodRawShape>(matters: ZodObject<T>, namePattern?: string) =>
   async (inPath: Path) => {
     const mdExtension = ".md";
-    const extension = path.extname(inPath);
+    const extension = path.extname(inPath).toLowerCase();
     if (extension !== mdExtension) {
       return error("no matches" as const);
     }
@@ -422,7 +424,7 @@ const withMatter: MarkdownWithMatter =
 const parseMarkdown = (namePattern?: string): Parser<Markdown, MarkdownError> =>
   promisify((inPath: Path) => {
     const mdExtension = ".md";
-    const extension = path.extname(inPath);
+    const extension = path.extname(inPath).toLowerCase();
     if (extension !== mdExtension) {
       return error("invalid extension" as const);
     }
