@@ -26,8 +26,9 @@ import {
   type ObjectWithName,
   type Markdown,
   type MarkdownError,
-  TfsArrayWithName,
-  TfsObjectWithName,
+  type TfsArrayWithName,
+  type TfsObjectWithName,
+  type TfsMarkdownWithContent,
 } from "./types";
 import { readFile } from "node:fs/promises";
 import { z, type ZodObject, type ZodRawShape } from "zod";
@@ -46,7 +47,7 @@ import {
 
 const url = (): TfsUrl => {
   const schema: TfsUrl = {
-    error: handler => withErrorHandler(schema.parse, handler),
+    error: handler => withErrorHandler(schema, handler),
     type: "url",
     parse: async (pathToParse) =>
     {
@@ -84,11 +85,9 @@ const url = (): TfsUrl => {
 const image = (imagePathForSplit?: string): TfsImage => {
   const schema: TfsImage = {
     type: "image",
-    error: handler => withErrorHandler(schema.parse, handler),
+    error: handler => withErrorHandler(schema, handler),
     parse: async (inPath: Path) =>
     {
-      const extensions = [".jpg", ".webp", ".png", ".svg", ".ico"];
-      const extension = path.extname(inPath);
 
       if (!extensions.includes(extension))
       {
@@ -152,7 +151,7 @@ const arrayWithName =
   (namePattern?: string) => {
     const schema: TfsArrayWithName<T> = {
       type: "arrayWithName" as const,
-      error: handler => withErrorHandler(schema.parse, handler),
+      error: handler => withErrorHandler(schema, handler),
       async parse(inPath: Path)
       {
         const name = path.basename(inPath);
@@ -205,7 +204,7 @@ const array = <ElementType extends TfsValue<unknown, unknown>>(
 ): TfsArray<ElementType> => {
   const schema: TfsArray<ElementType> = {
     type: "array",
-    error: handler => withErrorHandler(schema.parse, handler),
+    error: handler => withErrorHandler(schema, handler),
     parse: arrayParse(element),
     withName: arrayWithName(arrayParse(element)),
   };
@@ -230,7 +229,7 @@ const objectWithName =
   (namePattern?: string) => {
     const schema: TfsObjectWithName<T> = {
       type: "objectWithName",
-      error: handler => withErrorHandler(schema.parse, handler),
+      error: handler => withErrorHandler(schema, handler),
       async parse(inPath: Path)
       {
         const name = path.basename(inPath);
@@ -304,9 +303,9 @@ const objectParse =
     return ok(spread);
   };
 const object = <T extends TfsRecord>(fields: T): TfsObject<T> => {
-  const schema = {
+  const schema: TfsObject<T> = {
     type: "object" as const,
-    error: (handler: (error: InferError<TfsObject<T>>) => void) => withErrorHandler(schema.parse, handler),
+    error: handler => withErrorHandler(schema, handler),
     parse: objectParse(fields),
     withName: objectWithName(objectParse(fields)),
   };
@@ -319,7 +318,7 @@ const union = <T extends Readonly<[...TfsValue<unknown, unknown>[]]>>(
 ): TfsUnion<T> => {
   const schema: TfsUnion<T> = {
     type: "union",
-    error: handler => withErrorHandler(schema.parse, handler),
+    error: handler => withErrorHandler(schema, handler),
     async parse(path: Path)
     {
       for (const [option, type] of types.entries())
@@ -411,9 +410,9 @@ const parseMarkdownWithContent =
 const withMatter: MarkdownWithMatter =
   (nameWithPattern) =>
   <T extends ZodRawShape>(matters: ZodObject<T>) => {
-    const schema = {
+    const schema: TfsMarkdownWithContent<T> = {
       type: "markdownWithContent" as const,
-      error: handler => withErrorHandler(schema.parse, handler),
+      error: handler => withErrorHandler(schema, handler),
       parse: parseMarkdownWithContent(matters, nameWithPattern),
     };
 
@@ -446,7 +445,7 @@ const parseMarkdown = (namePattern?: string): Parser<Markdown, MarkdownError> =>
 const markdown = <T extends string>(namePattern?: T): TfsMarkdown => {
   const schema: TfsMarkdown = {
     type: "markdown" as const,
-    error: handler => withErrorHandler(schema.parse, handler),
+    error: handler => withErrorHandler(schema, handler),
     withMatter: withMatter(namePattern),
     parse: parseMarkdown(namePattern),
   };
@@ -462,12 +461,12 @@ export const typefs = {
   object,
   union,
 };
-function withErrorHandler<OkValue, ErrorValue>(parser: Parser<OkValue, ErrorValue>, handler: (error: ErrorValue) => void)
+function withErrorHandler<OkValue, ErrorValue>(parser: TfsValue<OkValue, ErrorValue>, handler: (error: ErrorValue) => void)
 {
   return {
     ...parser,
     parse: async (path: Path) => {
-      const result = await parser(path);
+      const result = await parser.parse(path);
       if (!result.wasResultSuccessful)
       {
         handler(result.errorValue);
