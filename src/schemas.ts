@@ -22,6 +22,7 @@ import {
   type TfsAnyValue,
   type TfsValueWithName,
   type TfsOptional,
+  type TfsTextFile,
 } from "./types";
 import { readFile } from "node:fs/promises";
 import { z, type ZodObject, type ZodRawShape } from "zod";
@@ -345,14 +346,14 @@ const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
     if (extension !== mdExtension) {
       return error("invalid extension" as const);
     }
-
+    
     return ok({
-      name,
-      value: url,
+      name: path.basename(inPath, path.extname(inPath)),
+      path: inPath
     });
   });
 
-const markdown = <T extends string>(): TfsMarkdown => {
+const markdown = (): TfsMarkdown => {
   const schema: TfsMarkdown = {
     withErrorHandler: (handler) => errorHandler(schema, handler),
     withName: (namePattern?: string) => withNameHandler(schema, namePattern),
@@ -364,9 +365,35 @@ const markdown = <T extends string>(): TfsMarkdown => {
   return schema;
 };
 
+const textFile = (): TfsTextFile => {
+  const schema: TfsTextFile = {
+    withErrorHandler: (handler) => errorHandler(schema, handler),
+    withName: (namePattern?: string) => withNameHandler(schema, namePattern),
+    optional: () => optionalWrapper(schema),
+    async parse(inPath) {
+      const txtExtension = ".txt";
+      const extension = path.extname(inPath).toLowerCase();
+      if (extension !== txtExtension) {
+        return error("no matches" as const);
+      }
+
+      const contentFile = await readFileSafe(inPath);
+
+      if (!contentFile.wasResultSuccessful) {
+        return error("could not read file" as const);
+      }
+
+      return ok(contentFile.okValue)
+    }
+  };
+
+  return schema;
+};
+
 export const typefs = {
   url,
   markdown,
+  textFile,
   image,
   array,
   object,
@@ -428,7 +455,7 @@ function optionalWrapper<
   const { parse, ...rest } = schema;
   const newSchema: TfsOptional<OkType> = {
     ...rest,
-    withErrorHandler: (handler) => newSchema,
+    withErrorHandler: (_handler) => newSchema,
     withName: (namePattern?: string) => withNameHandler(newSchema, namePattern),
     async parse(inPath: Path) {
       const parseResult = await schema.parse(inPath);

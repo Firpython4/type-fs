@@ -33,7 +33,7 @@ export type MarkdownWithMatter = (
 ) => <T extends ZodRawShape>(
   matters: ZodObject<T>,
 ) => TfsMarkdownWithContent<T>;
-export type Markdown = { type: "markdown"; path: Path } & TfsEntity;
+export type Markdown = { path: Path } & TfsEntity;
 export type MarkdownError = "no matches";
 export type TfsMarkdown = {
   withMatter: ReturnType<MarkdownWithMatter>;
@@ -41,7 +41,7 @@ export type TfsMarkdown = {
 
 export const couldNotReadDirectory = "could not read directory" as const;
 
-export type TfsTextFile = TfsValue<Buffer, "no matches">;
+export type TfsTextFile = TfsValue<Buffer, "no matches" | "could not read file">;
 
 export type TfsAnyValue = TfsValue<unknown, unknown>;
 
