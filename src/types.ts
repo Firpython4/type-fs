@@ -41,7 +41,10 @@ export type TfsMarkdown = {
 
 export const couldNotReadDirectory = "could not read directory" as const;
 
-export type TfsTextFile = TfsValue<Buffer, "no matches" | "could not read file">;
+export type TfsTextFile = TfsValue<
+  Buffer,
+  "no matches" | "could not read file"
+>;
 
 export type TfsAnyValue = TfsValue<unknown, unknown>;
 
@@ -58,8 +61,9 @@ type ParserWithName<OkType, ErrorType> = (
 ) => TfsValueWithName<OkType, ErrorType>;
 
 export type TfsObject<T extends TfsRecord> = TfsValue<
-    InferTfsObject<T>,
-    "no matches" | typeof couldNotReadDirectory>;
+  InferTfsObject<T>,
+  "no matches" | typeof couldNotReadDirectory
+>;
 
 type UrlError =
   | "no matches"
@@ -79,7 +83,10 @@ export type InferArrayOk<ElementType extends TfsAnyValue> = Array<
 
 export interface TfsArray<ElementType extends TfsAnyValue>
   extends TfsValue<InferArrayOk<ElementType>, typeof couldNotReadDirectory> {
-  readonly withName: ParserWithName<InferArrayOk<ElementType>, typeof couldNotReadDirectory>;
+  readonly withName: ParserWithName<
+    InferArrayOk<ElementType>,
+    typeof couldNotReadDirectory
+  >;
 }
 
 export type TfsUnion<T extends Readonly<[...TfsAnyValue[]]>> = TfsValue<

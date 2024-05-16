@@ -346,10 +346,10 @@ const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
     if (extension !== mdExtension) {
       return error("invalid extension" as const);
     }
-    
+
     return ok({
       name: path.basename(inPath, path.extname(inPath)),
-      path: inPath
+      path: inPath,
     });
   });
 
@@ -383,8 +383,8 @@ const textFile = (): TfsTextFile => {
         return error("could not read file" as const);
       }
 
-      return ok(contentFile.okValue)
-    }
+      return ok(contentFile.okValue);
+    },
   };
 
   return schema;
@@ -447,10 +447,9 @@ function withNameHandler<OkType, ErrorType>(
   return newSchema;
 }
 
-function optionalWrapper<
-  T extends TfsValue<OkType, unknown>,
-  OkType,
->(schema: T) {
+function optionalWrapper<T extends TfsValue<OkType, unknown>, OkType>(
+  schema: T,
+) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { parse, ...rest } = schema;
   const newSchema: TfsOptional<OkType> = {
