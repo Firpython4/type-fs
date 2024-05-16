@@ -1,10 +1,4 @@
-import {
-  error,
-  type ExtractOkType,
-  map,
-  ok,
-  type Result,
-} from "./result";
+import { error, type ExtractOkType, map, ok, type Result } from "./result";
 import {
   type Path,
   type TfsValue,
@@ -26,7 +20,8 @@ import {
   type MarkdownError,
   type TfsMarkdownWithContent,
   type TfsAnyValue,
-  type WithName,
+  type TfsValueWithName,
+  type TfsOptional,
 } from "./types";
 import { readFile } from "node:fs/promises";
 import { z, type ZodObject, type ZodRawShape } from "zod";
@@ -45,27 +40,24 @@ import {
 
 const url = (): TfsUrl => {
   const schema: TfsUrl = {
-    withErrorHandler: handler => errorHandler(schema, handler),
-    parse: async (pathToParse) =>
-    {
+    withErrorHandler: (handler) => errorHandler(schema, handler),
+    optional: () => optionalWrapper(schema),
+    parse: async (pathToParse) => {
       const extension = ".url";
       const ext = path.extname(pathToParse).toLowerCase();
-      if (ext !== extension)
-      {
+      if (ext !== extension) {
         return error("invalid extension" as const);
       }
 
       const url = await getUrlFromPath(pathToParse);
 
-      if (!url.wasResultSuccessful)
-      {
+      if (!url.wasResultSuccessful) {
         return error(url.errorValue);
       }
 
       const urlOkValue = url.okValue;
       const parseResult = z.string().url().safeParse(urlOkValue);
-      if (!parseResult.success)
-      {
+      if (!parseResult.success) {
         return error("invalid url" as const);
       }
 
@@ -81,23 +73,20 @@ const url = (): TfsUrl => {
 
 const image = (imagePathForSplit?: string): TfsImage => {
   const schema: TfsImage = {
-    withErrorHandler: handler => errorHandler(schema, handler),
-    parse: async (inPath: Path) =>
-    {
+    withErrorHandler: (handler) => errorHandler(schema, handler),
+    optional: () => optionalWrapper(schema),
+    parse: async (inPath: Path) => {
       const extensions = [".jpg", ".webp", ".png", ".svg", ".ico", ".jpeg"];
       const extension = path.extname(inPath).toLowerCase();
 
-      if (!extensions.includes(extension))
-      {
+      if (!extensions.includes(extension)) {
         return error("invalid extension" as const);
       }
 
       let url = inPath.replaceAll("\\", "/");
-      if (imagePathForSplit)
-      {
+      if (imagePathForSplit) {
         const split = url.split(imagePathForSplit)[1];
-        if (!split)
-        {
+        if (!split) {
           return error("image is not in the configured folder" as const);
         }
         url = split;
@@ -105,24 +94,20 @@ const image = (imagePathForSplit?: string): TfsImage => {
 
       const size = await sizeOfAsync(inPath);
 
-      if (!size.wasResultSuccessful)
-      {
+      if (!size.wasResultSuccessful) {
         return error(`Unable to read file ${inPath}`);
       }
 
       const sizeValue = size.okValue;
 
-      if (!sizeValue)
-      {
+      if (!sizeValue) {
         return error(`Unable to read file ${inPath}`);
       }
 
-      if (sizeValue.width === undefined)
-      {
+      if (sizeValue.width === undefined) {
         return error(`Invalid image width for ${inPath}`);
       }
-      if (sizeValue.height === undefined)
-      {
+      if (sizeValue.height === undefined) {
         return error(`Invalid image height for ${inPath}`);
       }
 
@@ -174,12 +159,13 @@ const array = <ElementType extends TfsAnyValue>(
   element: ElementType,
 ): TfsArray<ElementType> => {
   const schema: TfsArray<ElementType> = {
-    withErrorHandler: handler => errorHandler(schema, handler),
+    withErrorHandler: (handler) => errorHandler(schema, handler),
     parse: arrayParse(element),
-    withName: pattern => withNameHandler(schema, pattern),
+    optional: () => optionalWrapper(schema),
+    withName: (pattern) => withNameHandler(schema, pattern),
   };
-    return schema;
-  };
+  return schema;
+};
 
 export async function getUrl(imageOrUrlPath: Path) {
   return (await readFile(imageOrUrlPath)).toString();
@@ -242,11 +228,11 @@ const objectParse =
     ) as InferTfsObject<T>;
     return ok(spread);
   };
-function object<T extends TfsRecord>(fields: T): TfsObject<T>
-{
+function object<T extends TfsRecord>(fields: T): TfsObject<T> {
   const schema: TfsObject<T> = {
-    withErrorHandler: handler => errorHandler(schema, handler),
+    withErrorHandler: (handler) => errorHandler(schema, handler),
     parse: objectParse(fields),
+    optional: () => optionalWrapper(schema),
     withName: (pattern?: string) => withNameHandler(schema, pattern),
   };
 
@@ -257,17 +243,15 @@ const union = <T extends Readonly<[...TfsAnyValue[]]>>(
   ...types: T
 ): TfsUnion<T> => {
   const schema: TfsUnion<T> = {
-    withErrorHandler: handler => errorHandler(schema, handler),
-    async parse(path: Path)
-    {
-      for (const [option, type] of types.entries())
-      {
+    withErrorHandler: (handler) => errorHandler(schema, handler),
+    optional: () => optionalWrapper(schema),
+    async parse(path: Path) {
+      for (const [option, type] of types.entries()) {
         const typeSafeIndex = option as ArrayIndices<T>;
 
         const parseResult = await type.parse(path);
 
-        if (!parseResult.wasResultSuccessful)
-        {
+        if (!parseResult.wasResultSuccessful) {
           continue;
         }
 
@@ -281,8 +265,8 @@ const union = <T extends Readonly<[...TfsAnyValue[]]>>(
     },
   };
 
-    return schema;
-  };
+  return schema;
+};
 
 const parseMarkdownWithContent =
   <T extends ZodRawShape>(matters: ZodObject<T>, namePattern?: string) =>
@@ -350,7 +334,8 @@ const withMatter: MarkdownWithMatter =
   (nameWithPattern) =>
   <T extends ZodRawShape>(matters: ZodObject<T>) => {
     const schema: TfsMarkdownWithContent<T> = {
-      withErrorHandler: handler => errorHandler(schema, handler),
+      withErrorHandler: (handler) => errorHandler(schema, handler),
+      optional: () => optionalWrapper(schema),
       parse: parseMarkdownWithContent(matters, nameWithPattern),
     };
 
@@ -381,7 +366,8 @@ const parseMarkdown = (namePattern?: string): Parser<Markdown, MarkdownError> =>
 
 const markdown = <T extends string>(namePattern?: T): TfsMarkdown => {
   const schema: TfsMarkdown = {
-    withErrorHandler: handler => errorHandler(schema, handler),
+    withErrorHandler: (handler) => errorHandler(schema, handler),
+    optional: () => optionalWrapper(schema),
     withMatter: withMatter(namePattern),
     parse: parseMarkdown(namePattern),
   };
@@ -398,47 +384,67 @@ export const typefs = {
   union,
 };
 
-function errorHandler<OkValue, ErrorValue>(parser: TfsValue<OkValue, ErrorValue>, handler: (error: ErrorValue) => void)
-{
+function errorHandler<OkValue, ErrorValue>(
+  parser: TfsValue<OkValue, ErrorValue>,
+  handler: (error: ErrorValue) => void,
+) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const {parse, ...rest} = parser
+  const { parse, ...rest } = parser;
   return {
     ...rest,
     parse: async (path: Path) => {
       const result = await parser.parse(path);
-      if (!result.wasResultSuccessful)
-      {
+      if (!result.wasResultSuccessful) {
         handler(result.errorValue);
       }
 
       return result;
-    }
-  }
+    },
+  };
 }
 
-function withNameHandler<T extends TfsValue<OkType, ErrorType>, OkType, ErrorType> (schema: T, namePattern?: string)
-{
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const {parse, withErrorHandler, ...rest} = schema;
-    const newSchema: WithName<OkType, ErrorType> = {
-      ...rest,
-      withErrorHandler: handler => errorHandler(newSchema, handler),
-      async parse(inPath: Path)
-      {
-        const name = path.basename(inPath);
-        if (namePattern !== undefined)
-        {
-          const matches = name.match(namePattern);
-          if (matches === null)
-          {
-            return error("name does not match" as const);
-          }
+function withNameHandler<OkType, ErrorType>(
+  schema: TfsValue<OkType, ErrorType>,
+  namePattern?: string,
+) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { parse, withErrorHandler, ...rest } = schema;
+  const newSchema: TfsValueWithName<OkType, ErrorType> = {
+    ...rest,
+    withErrorHandler: (handler) => errorHandler(newSchema, handler),
+    optional: () => optionalWrapper(newSchema),
+    async parse(inPath: Path) {
+      const name = path.basename(inPath);
+      if (namePattern !== undefined) {
+        const matches = name.match(namePattern);
+        if (matches === null) {
+          return error("name does not match" as const);
         }
+      }
 
-        const parseResult = await schema.parse(inPath);
-        return map(parseResult, (okParse) => ({ name, parsed: okParse }));
-      },
-    };
+      const parseResult = await schema.parse(inPath);
+      return map(parseResult, (okParse) => ({ name, parsed: okParse }));
+    },
+  };
 
-    return newSchema;
-} 
+  return newSchema;
+}
+
+function optionalWrapper<
+  T extends TfsValue<OkType, ErrorType>,
+  OkType,
+  ErrorType,
+>(schema: T) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { parse, ...rest } = schema;
+  const newSchema: TfsOptional<OkType> = {
+    ...rest,
+    withErrorHandler: (handler) => newSchema,
+    async parse(inPath: Path) {
+      const parseResult = await schema.parse(inPath);
+      return parseResult.wasResultSuccessful ? parseResult : ok(undefined);
+    },
+  };
+
+  return newSchema;
+}

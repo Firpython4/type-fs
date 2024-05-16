@@ -5,7 +5,7 @@ import { type Result } from "./result";
 export type TfsValue<Ok, Error> = {
   withErrorHandler: (handler: (error: Error) => void) => TfsValue<Ok, Error>;
   readonly parse: Parser<Ok, Error>;
-};
+} & OptionalMixin<Ok>;
 
 type TfsEntity = {
   name: string;
@@ -42,7 +42,7 @@ export const couldNotReadDirectory = "could not read directory" as const;
 
 export type TfsAnyValue = TfsValue<unknown, unknown>;
 
-export type WithName<NewOkType, NewErrorType> = TfsValue<
+export type TfsValueWithName<NewOkType, NewErrorType> = TfsValue<
   {
     name: string;
     parsed: NewOkType;
@@ -52,7 +52,7 @@ export type WithName<NewOkType, NewErrorType> = TfsValue<
 
 type ParserWithName<T extends TfsAnyValue> = (
   pattern?: string,
-) => WithName<InferOk<T>, InferError<T>>;
+) => TfsValueWithName<InferOk<T>, InferError<T>>;
 
 export interface TfsObject<T extends TfsRecord>
   extends TfsValue<
@@ -67,9 +67,15 @@ type UrlError =
   | "invalid extension"
   | "could not read file";
 
+type OptionalMixin<T> = {
+  optional: () => TfsOptional<T>;
+};
+
 export type TfsUrl = TfsValue<Url, UrlError>;
 
-export type InferArrayOk<ElementType extends TfsAnyValue> = Array<InferOk<ElementType>>;
+export type InferArrayOk<ElementType extends TfsAnyValue> = Array<
+  InferOk<ElementType>
+>;
 
 export interface TfsArray<ElementType extends TfsAnyValue>
   extends TfsValue<InferArrayOk<ElementType>, typeof couldNotReadDirectory> {
@@ -80,6 +86,8 @@ export type TfsUnion<T extends Readonly<[...TfsAnyValue[]]>> = TfsValue<
   InferTfsUnion<T>,
   "no matches"
 >;
+
+export type TfsOptional<OkType> = TfsValue<OkType | undefined, never>;
 
 type Url = { url: string } & TfsEntity;
 
