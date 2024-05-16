@@ -4,6 +4,7 @@ import { type Result } from "./result";
 
 export type TfsValue<Ok, Error> = {
   withErrorHandler: (handler: (error: Error) => void) => TfsValue<Ok, Error>;
+  readonly withName: ParserWithName<Ok, Error>;
   readonly parse: Parser<Ok, Error>;
 } & OptionalMixin<Ok>;
 
@@ -33,12 +34,14 @@ export type MarkdownWithMatter = (
   matters: ZodObject<T>,
 ) => TfsMarkdownWithContent<T>;
 export type Markdown = { type: "markdown"; path: Path } & TfsEntity;
-export type MarkdownError = "no matches" | "invalid name";
+export type MarkdownError = "no matches";
 export type TfsMarkdown = {
   withMatter: ReturnType<MarkdownWithMatter>;
 } & TfsValue<Markdown, MarkdownError>;
 
 export const couldNotReadDirectory = "could not read directory" as const;
+
+export type TfsTextFile = TfsValue<Buffer, "no matches">;
 
 export type TfsAnyValue = TfsValue<unknown, unknown>;
 
@@ -50,17 +53,14 @@ export type TfsValueWithName<NewOkType, NewErrorType> = TfsValue<
   NewErrorType | "name does not match"
 >;
 
-type ParserWithName<T extends TfsAnyValue> = (
+type ParserWithName<OkType, ErrorType> = (
   pattern?: string,
-) => TfsValueWithName<InferOk<T>, InferError<T>>;
+) => TfsValueWithName<OkType, ErrorType>;
 
-export interface TfsObject<T extends TfsRecord>
-  extends TfsValue<
+export type TfsObject<T extends TfsRecord> = TfsValue<
     InferTfsObject<T>,
-    "no matches" | typeof couldNotReadDirectory
-  > {
-  readonly withName: ParserWithName<TfsObject<T>>;
-}
+    "no matches" | typeof couldNotReadDirectory>;
+
 type UrlError =
   | "no matches"
   | "invalid url"
@@ -79,7 +79,7 @@ export type InferArrayOk<ElementType extends TfsAnyValue> = Array<
 
 export interface TfsArray<ElementType extends TfsAnyValue>
   extends TfsValue<InferArrayOk<ElementType>, typeof couldNotReadDirectory> {
-  readonly withName: ParserWithName<TfsArray<ElementType>>;
+  readonly withName: ParserWithName<InferArrayOk<ElementType>, typeof couldNotReadDirectory>;
 }
 
 export type TfsUnion<T extends Readonly<[...TfsAnyValue[]]>> = TfsValue<
