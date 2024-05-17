@@ -73,6 +73,7 @@ type UrlError =
 
 type OptionalMixin<T> = {
   optional: () => TfsOptional<T>;
+  isOptional: boolean;
 };
 
 export type TfsUrl = TfsValue<Url, UrlError>;
@@ -94,7 +95,7 @@ export type TfsUnion<T extends Readonly<[...TfsAnyValue[]]>> = TfsValue<
   "no matches"
 >;
 
-export type TfsOptional<OkType> = TfsValue<OkType | undefined, never>;
+export type TfsOptional<OkType> = TfsValue<OkType | undefined, unknown> & { isOptional: true };
 
 type Url = { url: string } & TfsEntity;
 
