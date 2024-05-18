@@ -76,7 +76,7 @@ const url = (): TfsUrl => {
 
 const image = (imagePathForSplit?: string): TfsImage => {
   const schema: TfsImage = {
-    withErrorHandler: (handler) => errorHandler(schema, handler),
+    withErrorHandler: handler => errorHandler(schema, handler),
     withName: (namePattern?: string) => withNameHandler(schema, namePattern),
     optional: () => optionalWrapper(schema),
     isOptional: false,
@@ -415,7 +415,7 @@ export const typefs = {
 
 function errorHandler<OkValue, ErrorValue>(
   parser: TfsValue<OkValue, ErrorValue>,
-  handler: (error: ErrorValue) => void,
+  handler: (error: ErrorValue, inPath: Path) => void,
 ) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { parse, ...rest } = parser;
@@ -424,7 +424,7 @@ function errorHandler<OkValue, ErrorValue>(
     parse: async (path: Path) => {
       const result = await parser.parse(path);
       if (!result.wasResultSuccessful) {
-        handler(result.errorValue);
+        handler(result.errorValue, path);
       }
 
       return result;
