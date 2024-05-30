@@ -74,7 +74,7 @@ const url = (): TfsUrl => {
   return schema;
 };
 
-const image = (imagePathForSplit?: string): TfsImage => {
+const image = (linkCutoff?: string): TfsImage => {
   const schema: TfsImage = {
     withErrorHandler: handler => errorHandler(schema, handler),
     withName: (namePattern?: string) => withNameHandler(schema, namePattern),
@@ -89,8 +89,8 @@ const image = (imagePathForSplit?: string): TfsImage => {
       }
 
       let url = inPath.replaceAll("\\", "/");
-      if (imagePathForSplit) {
-        const split = url.split(imagePathForSplit)[1];
+      if (linkCutoff) {
+        const split = url.split(linkCutoff)[1];
         if (!split) {
           return error("image is not in the configured folder" as const);
         }
