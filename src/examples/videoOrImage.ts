@@ -1,17 +1,29 @@
+import { safePath } from "~/fileManagement";
 import { typefs } from "../schemas";
 import { type InferOk } from "../types";
 
+//Matches either an image inside the "public/" folder or a .url file
 const videoOrImageSchema = typefs.union(typefs.image("public/"), typefs.url());
 
-type VideoOrImage = InferOk<typeof videoOrImageSchema>;
-declare const videoOrImage: VideoOrImage;
-function example() {
-  if (videoOrImage.option === 0) {
-    const [width, height] = [
+async function example() {
+  const parseResult = await videoOrImageSchema.parse(safePath("video.url"));
+  if (parseResult.wasResultSuccessful) {
+    //Inferred as a discriminated union of Image and Url
+    const videoOrImage = parseResult.okValue;
+    if (videoOrImage.option === 0) {
+      /* Both are inferred as numbers because
+      videoOrImage.value is inferred as an Image */
+      const [width, height] = [
       videoOrImage.value.width,
       videoOrImage.value.height,
     ];
-  } else {
-    const videoUrl = videoOrImage.value.url;
+    
+    console.log(width, height);
+    } else {
+      //videoOrImage.value is inferred as a Url
+      const videoUrl = videoOrImage.value.url;
+      
+      console.log(videoUrl);
+    }
   }
 }
