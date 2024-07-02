@@ -61,7 +61,7 @@ async function example() {
 
 ## Why?
 
-I wanted to have a file system parser that I could easily use to define a single source of truth for my file system entities. I wanted schemas and validators to be inferred from this source of truth. That way, I could quickly respond to requirements changes by changing the file system schema and the validators would automatically update. This is similar to how Zod works. I could've used something like io-ts, but I wanted full control over the schema primitives and their parsing logic.
+I wanted to have a file system parser that I could easily use to define a single source of truth for my file system entities. I wanted schemas and validators to be inferred from this source of truth. That way, I could quickly respond to requirements changes by changing the file system schema and the validators would automatically update. This is similar to how Zod works. I could've used something like [io-ts](https://github.com/gcanti/io-ts), but I wanted full control over the schema primitives and their parsing logic.
 
 ## How?
 
