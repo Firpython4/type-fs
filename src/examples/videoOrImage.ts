@@ -1,6 +1,5 @@
-import { safePath } from "~/fileManagement";
+import { safePath } from "../fileManagement";
 import { typefs } from "../schemas";
-import { type InferOk } from "../types";
 
 //Matches either an image inside the "public/" folder or a .url file
 const videoOrImageSchema = typefs.union(typefs.image("public/"), typefs.url());

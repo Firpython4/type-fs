@@ -1,4 +1,4 @@
-import { safePath } from "~/fileManagement";
+import { safePath } from "../fileManagement";
 import { typefs } from "../schemas";
 
 //matches a folder named "videos" that contains .url files
