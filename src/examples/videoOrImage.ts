@@ -1,5 +1,5 @@
 import { safePath } from "../fileManagement";
-import { typefs } from "../schemas";
+import { typefs } from "../schemas/schemas";
 
 //Matches either an image inside the "public/" folder or a .url file
 const videoOrImageSchema = typefs.union(typefs.image("public/"), typefs.url());
