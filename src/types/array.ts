@@ -1,5 +1,4 @@
-import { InferOk } from "./helpers";
-import { couldNotReadDirectory } from "./types";
+import { couldNotReadDirectory, InferOk } from "./helpers";
 import { ParserWithName, TfsAnyValue, TfsValue } from "./value";
 
 export interface TfsArray<ElementType extends TfsAnyValue>

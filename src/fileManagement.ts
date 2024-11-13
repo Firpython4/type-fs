@@ -2,9 +2,21 @@ import { type Dirent, promises as fileSystem } from "node:fs";
 import path from "node:path";
 import { promisify } from "util";
 import sizeOf from "image-size";
-import { error, ok, okAsync } from "./result";
-import { type Path } from "./types";
-import { readdir } from "node:fs/promises";
+import { error, map, ok, okAsync } from "./result";
+import { readdir, readFile } from "node:fs/promises";
+import { Path } from "~/types/helpers";
+
+export function getName(inPath: Path) {
+  return path.basename(inPath, path.extname(inPath));
+}
+
+export async function getUrl(imageOrUrlPath: Path) {
+  return (await readFile(imageOrUrlPath)).toString();
+}
+
+export async function getUrlFromPath(path: Path) {
+  return map(await readFileSafe(path), (value) => value.toString());
+}
 
 export async function getFileRelative(filePath: string) {
   return await fileSystem.readFile(path.join(process.cwd(), filePath));

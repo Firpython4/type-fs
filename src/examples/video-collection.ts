@@ -1,5 +1,5 @@
-import { safePath } from "../fileManagement";
-import { typefs } from "../schemas/schemas";
+import { safePath } from "~/fileManagement";
+import typefs from "~/typefs";
 
 //matches a folder named "videos" that contains .url files
 const videoUrls = typefs.array(typefs.url()).withName("videos");

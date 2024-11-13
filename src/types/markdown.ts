@@ -1,7 +1,7 @@
 import { z, ZodObject, ZodRawShape } from "zod";
 import { TfsValue } from "./value";
-import { Path } from "./types";
 import { TfsEntity } from "./entity";
+import { Path } from "~/types/helpers";
 
 export type TfsMarkdownWithContent<T extends ZodRawShape> = TfsValue<
   {

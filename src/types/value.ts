@@ -1,5 +1,5 @@
 import { Result } from "~/result";
-import { Path } from "./types";
+import { Path } from "~/types/helpers";
 
 export type TfsValueWithName<NewOkType, NewErrorType> = TfsValue<
   {
