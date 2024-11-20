@@ -25,5 +25,8 @@
   "ct3aMetadata": {
     "initVersion": "7.24.0"
   },
+  "scripts": {
+    "test": "vitest"
+  },
   "packageManager": "pnpm@7.27.1"
 }
