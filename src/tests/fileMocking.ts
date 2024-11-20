@@ -1,7 +1,7 @@
 import * as fileSystem from "node:fs"
 import path from "node:path";
 import { Path } from "~/types/helpers";
-import { safeJoin } from "~/fileManagement";
+import { safeJoin, toPath } from "~/fileManagement";
 
 export type FileMockingContext = {
   getCurrentDirectory(): string & { __brand: "path" };
@@ -22,43 +22,45 @@ export type FileMockingContext = {
 
 export function createFileMocker(inPath: Path) {
   const out = {
-    __currentDirectory: inPath,
-    __filesToDelete: new Array<string>(),
-    __directoriesToDelete: new Array<string>(),
+    __currentDirectory: "" as Path,
+    __currentFile: "" as Path,
 
     getCurrentDirectory() {
       return out.__currentDirectory;
     },
 
+    getCurrentFile() {
+      return safeJoin(out.__currentDirectory, out.__currentFile);
+    },
+
     createFile(inPath: Path, content: string) {
       fileSystem.writeFileSync(path.join(out.__currentDirectory, inPath), content);
 
-      if (out.__currentDirectory === inPath && !out.__filesToDelete.includes(inPath)) {
-        out.__filesToDelete.push(inPath);
-      }
-
+      out.__currentFile = inPath;
       return out;
     },
     createDirectory(inPath: Path) {
       const newPath = safeJoin(out.__currentDirectory, inPath);
-      fileSystem.mkdirSync(newPath);
+      fileSystem.mkdirSync(newPath, { recursive: true });
       out.__currentDirectory = newPath;
-
-      if (!out.__directoriesToDelete.includes(inPath)) {
-        out.__directoriesToDelete.push(inPath);
-      }
 
       return out;
     },
-    cleanup() {
-      for (const file of out.__filesToDelete) {
-        fileSystem.rmSync(path.join(out.__currentDirectory, file));
-      }
 
-      for (const directory of out.__directoriesToDelete) {
-        fileSystem.rmSync(path.join(inPath, directory), { recursive: true });
-      }
+    copyFile(inPath: Path, outPath: Path) {
+      fileSystem.copyFileSync(inPath, path.join(out.__currentDirectory, outPath));
+      out.__currentFile = outPath;
+      return out;
+    },
+
+    goBack() {
+      out.__currentDirectory = safeJoin(out.__currentDirectory, toPath(".."));
+      return out;
+    },
+
+    cleanup() {
+      fileSystem.rmSync(inPath, { recursive: true });
     }
   };
-  return out;
+  return out.createDirectory(inPath);
 }
