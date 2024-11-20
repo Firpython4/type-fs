@@ -1,4 +1,3 @@
-// sum.test.js
 import { expect, test } from "vitest";
 import { relativePath, toPath } from "~/fileManagement";
 import typefs from "~/typefs";
