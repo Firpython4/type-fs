@@ -358,11 +358,17 @@ const withMatter: MarkdownWithMatter =
   };
 
 const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
-  (inPath: Path) => {
+  async (inPath: Path) => {
     const mdExtension = ".md";
     const extension = path.extname(inPath).toLowerCase();
     if (extension !== mdExtension) {
       return error("invalid extension" as const);
+    }
+
+    try {
+      await access(inPath, constants.R_OK);
+    } catch {
+      return error("could not read file" as const);
     }
 
     return ok({

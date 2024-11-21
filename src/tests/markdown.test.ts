@@ -46,3 +46,26 @@ test("The markdown schema should parse a markdown file with matter", async () =>
     expect(markdownResult.okValue.matters.title).toBe("This is a title");
   });
 });
+
+test("The markdown schema should fail if the file does not exist", async () => {
+  const markdownResult = await typefs.markdown().parse(toPath("test-resources/markdown/doesNotExist/test.md"));
+  if (markdownResult.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+
+  expect(markdownResult.errorValue).toBe("could not read file");
+});
+
+test("The markdown schema should fail if the file is not a markdown file", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/markdown/markdownTest"))
+    .createFile(toPath("notAMarkdown.txt"), "Hello World");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs.markdown().parse(fileMocker.getCurrentFile());
+    if (markdownResult.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+
+    expect(markdownResult.errorValue).toBe("invalid extension");
+  });
+});
