@@ -3,6 +3,7 @@ import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import {toPath} from "~/fileManagement";
 import {typefs} from "~/schemas";
+import { couldNotReadDirectory } from "~/types";
 
 test("The array schema should parse an array of urls", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest"))
@@ -37,3 +38,13 @@ test("The array schema should parse an array of objects", async () => {
     });
   }
 );
+
+test("The array schema parsing should fail if the directory does not exist", async () => {
+
+  const arrayResult = await typefs.array(typefs.url()).parse(toPath("test-resources/array/doesNotExist"));
+  if (arrayResult.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+
+  expect(arrayResult.errorValue).toBe(couldNotReadDirectory);
+});

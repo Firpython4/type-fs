@@ -25,7 +25,7 @@ import {
   type TfsOptional,
   type TfsTextFile,
 } from "./types";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { z, type ZodObject, type ZodRawShape } from "zod";
 import path from "node:path";
 import matter from "gray-matter";
@@ -38,6 +38,7 @@ import {
   safeReadDir,
   sizeOfAsync,
 } from "./fileManagement";
+import { constants, } from "node:fs";
 
 const url = (): TfsUrl => {
   const schema: TfsUrl = {
@@ -86,6 +87,12 @@ const image = (linkCutoff?: string): TfsImage => {
 
       if (!extensions.includes(extension)) {
         return error("invalid extension" as const);
+      }
+
+      try {
+        await access(inPath, constants.R_OK);
+      } catch {
+        return error("could not read file" as const);
       }
 
       let url = inPath.replaceAll("\\", "/");
