@@ -1,16 +1,22 @@
-import { Parser } from "~/types/value";
-import { Markdown, MarkdownError, MarkdownWithMatter, TfsMarkdown, TfsMarkdownWithContent } from "~/types/markdown";
+import { type Parser } from "~/types/value";
+import {
+  type Markdown,
+  type MarkdownError,
+  type MarkdownWithMatter,
+  type TfsMarkdown,
+  type TfsMarkdownWithContent
+} from "~/types/markdown";
 import { promisify } from "node:util";
 import path from "node:path";
 import { error, ok } from "~/result";
 import { errorHandler, optionalWrapper, withNameHandler } from "~/wrappers";
-import { z, ZodObject, ZodRawShape } from "zod";
+import { type z, type ZodObject, type ZodRawShape } from "zod";
 import { readFileSafe } from "~/fileManagement";
 import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
 import strip from "strip-markdown";
-import { Path } from "~/types/helpers";
+import { type Path } from "~/types/helpers";
 
 const parseMarkdownWithContent =
   <T extends ZodRawShape>(matters: ZodObject<T>) =>
@@ -81,7 +87,7 @@ const withMatter: MarkdownWithMatter =
     };
 
 const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
-  promisify((inPath: Path) => {
+  (inPath: Path) => {
     const mdExtension = ".md";
     const extension = path.extname(inPath).toLowerCase();
     if (extension !== mdExtension) {
@@ -92,7 +98,7 @@ const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
       name: path.basename(inPath, path.extname(inPath)),
       path: inPath,
     });
-  });
+  };
 
 const markdown = (): TfsMarkdown => {
   const schema: TfsMarkdown = {

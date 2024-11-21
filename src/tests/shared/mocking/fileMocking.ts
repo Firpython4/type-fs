@@ -3,20 +3,20 @@ import path from "node:path";
 import { type Path } from "~/types/helpers";
 import { safeJoin, toPath } from "~/fileManagement";
 
-export type FileMockingContext = {
+export type FileMocker = {
   getCurrentDirectory(): string & { __brand: "path" };
   cleanup(): void;
   createDirectory(inPath: Path): {
     getCurrentDirectory(): string & { __brand: "path" };
     cleanup(): void;
-    createDirectory(inPath: Path): any;
-    createFile(inPath: Path, content: string): any
+    createDirectory(inPath: Path): FileMocker;
+    createFile(inPath: Path, content: string): FileMocker
   };
   createFile(inPath: Path, content: string): {
     getCurrentDirectory(): string & { __brand: "path" };
     cleanup(): void;
-    createDirectory(inPath: Path): any;
-    createFile(inPath: Path, content: string): any
+    createDirectory(inPath: Path): FileMocker;
+    createFile(inPath: Path, content: string): FileMocker
   }
 };
 

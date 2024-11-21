@@ -18,7 +18,7 @@ type OptionalMixin<T> = {
 
 export type Parser<OkType, ErrorType> = (
   path: Path,
-) => Promise<Result<OkType, ErrorType>>;
+) => Promise<Result<OkType, ErrorType>> | Result<OkType, ErrorType>;
 
 export type ParserWithName<OkType, ErrorType> = (
   pattern?: string,

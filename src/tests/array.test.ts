@@ -1,11 +1,11 @@
 import { expect, test } from "vitest";
 import { relativePath, toPath } from "~/fileManagement";
 import typefs from "~/typefs";
-import { createFileMocker } from "~/tests/mocking/fileMocking";
-import { usingFileMockerAsync } from "~/tests/usingMockingContext";
+import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
+import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 
 test("The array schema should parse an array of urls", async () => {
-  const fileMocker = createFileMocker(relativePath(toPath("test-resources/array/arrayTest")))
+  const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.url"), "https://youtube.com");
 
@@ -21,7 +21,7 @@ test("The array schema should parse an array of urls", async () => {
   })})
 
 test("The array schema should parse an array of objects", async () => {
-  const fileMocker = createFileMocker(relativePath(toPath("test-resources/array/arrayTest")))
+  const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest"))
     .createDirectory(toPath("object"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .goBack()

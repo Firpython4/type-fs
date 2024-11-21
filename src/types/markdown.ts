@@ -18,7 +18,7 @@ export type MarkdownWithMatter = (
   matters: ZodObject<T>,
 ) => TfsMarkdownWithContent<T>;
 export type Markdown = { path: Path } & TfsEntity;
-export type MarkdownError = "no matches";
+export type MarkdownError = "no matches" | "invalid extension";
 export type TfsMarkdown = {
   withMatter: ReturnType<MarkdownWithMatter>;
 } & TfsValue<Markdown, MarkdownError>;
