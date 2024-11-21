@@ -40,7 +40,6 @@ test("The array schema should parse an array of objects", async () => {
 );
 
 test("The array schema parsing should fail if the directory does not exist", async () => {
-
   const arrayResult = await typefs.array(typefs.url()).parse(toPath("test-resources/array/doesNotExist"));
   if (arrayResult.wasResultSuccessful) {
     throw new Error("Expected error");
