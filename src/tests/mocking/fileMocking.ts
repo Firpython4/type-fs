@@ -1,6 +1,6 @@
 import * as fileSystem from "node:fs"
 import path from "node:path";
-import { Path } from "~/types/helpers";
+import { type Path } from "~/types/helpers";
 import { safeJoin, toPath } from "~/fileManagement";
 
 export type FileMockingContext = {

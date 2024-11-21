@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { relativePath, toPath } from "~/fileManagement";
 import typefs from "~/typefs";
-import { createFileMocker } from "~/tests/fileMocking";
+import { createFileMocker } from "~/tests/mocking/fileMocking";
 import { usingFileMockerAsync } from "~/tests/usingMockingContext";
 
 test("The array schema should parse an array of urls", async () => {

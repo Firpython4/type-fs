@@ -1,4 +1,4 @@
-import { createFileMocker } from "~/tests/fileMocking";
+import { createFileMocker } from "~/tests/mocking/fileMocking";
 import { relativePath, toPath } from "~/fileManagement";
 import { test, expect } from "vitest";
 import { usingFileMockerAsync } from "~/tests/usingMockingContext";
