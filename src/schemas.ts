@@ -31,7 +31,6 @@ import matter from "gray-matter";
 import { remark } from "remark";
 import html from "remark-html";
 import strip from "strip-markdown";
-import { promisify } from "node:util";
 import {
   getPath,
   readFileSafe,
@@ -351,7 +350,7 @@ const withMatter: MarkdownWithMatter =
   };
 
 const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
-  promisify((inPath: Path) => {
+  (inPath: Path) => {
     const mdExtension = ".md";
     const extension = path.extname(inPath).toLowerCase();
     if (extension !== mdExtension) {
@@ -362,7 +361,7 @@ const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
       name: path.basename(inPath, path.extname(inPath)),
       path: inPath,
     });
-  });
+  };
 
 const markdown = (): TfsMarkdown => {
   const schema: TfsMarkdown = {

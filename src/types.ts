@@ -14,7 +14,7 @@ type TfsEntity = {
 
 export type Parser<OkType, ErrorType> = (
   path: Path,
-) => Promise<Result<OkType, ErrorType>>;
+) => Promise<Result<OkType, ErrorType>> | Result<OkType, ErrorType>;
 
 type ImageError = string;
 export type TfsImage = TfsValue<Image, ImageError>;
@@ -34,7 +34,7 @@ export type MarkdownWithMatter = (
   matters: ZodObject<T>,
 ) => TfsMarkdownWithContent<T>;
 export type Markdown = { path: Path } & TfsEntity;
-export type MarkdownError = "no matches";
+export type MarkdownError = "no matches" | "invalid extension";
 export type TfsMarkdown = {
   withMatter: ReturnType<MarkdownWithMatter>;
 } & TfsValue<Markdown, MarkdownError>;
