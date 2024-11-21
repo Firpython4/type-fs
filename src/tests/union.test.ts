@@ -3,7 +3,6 @@ import { toPath } from "~/fileManagement";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import { expect, test } from "vitest";
 import {typefs} from "~/schemas";
-import { couldNotReadDirectory } from "~/types";
 
 test("The union schema should parse a union", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/union/unionTest"))

@@ -4,23 +4,16 @@ import { safeJoin, toPath } from "~/fileManagement";
 import { type Path} from "~/types";
 
 export type FileMocker = {
-  getCurrentDirectory(): string & { __brand: "path" };
+  getCurrentDirectory(): Path;
+  getCurrentFile(): Path;
   cleanup(): void;
-  createDirectory(inPath: Path): {
-    getCurrentDirectory(): string & { __brand: "path" };
-    cleanup(): void;
-    createDirectory(inPath: Path): FileMocker;
-    createFile(inPath: Path, content: string): FileMocker
-  };
-  createFile(inPath: Path, content: string): {
-    getCurrentDirectory(): string & { __brand: "path" };
-    cleanup(): void;
-    createDirectory(inPath: Path): FileMocker;
-    createFile(inPath: Path, content: string): FileMocker
-  }
+  createDirectory(inPath: Path): FileMocker;
+  createFile(inPath: Path, content: string): FileMocker;
+  copyFile(inPath: Path, outPath: Path): FileMocker;
+  goBack(): FileMocker;
 };
 
-export function createFileMocker(inPath: Path) {
+export function createFileMocker(inPath: Path): FileMocker {
   const out = {
     __currentDirectory: "" as Path,
     __currentFile: "" as Path,
