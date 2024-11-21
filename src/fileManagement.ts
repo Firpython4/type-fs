@@ -12,7 +12,7 @@ export async function getFileRelative(filePath: string) {
 }
 
 export function getPath(dirent: Dirent) {
-  return toPath(path.join(dirent.parentPath, dirent.name));
+  return toPath(path.join(dirent.path, dirent.name));
 }
 
 export async function readFileSafe(path: Path) {
