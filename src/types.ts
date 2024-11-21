@@ -28,10 +28,12 @@ export type TfsMarkdownWithContent<T extends ZodRawShape> = TfsValue<
   "could not read file" | "invalid matter" | MarkdownError
 >;
 
+export type TypeOfZodObject = ReturnType<typeof z.object<T>>;
+
 export type MarkdownWithMatter = (
   namePattern?: string,
 ) => <T extends ZodRawShape>(
-  matters: ZodObject<T>,
+  matters: TypeOfZodObject<T>
 ) => TfsMarkdownWithContent<T>;
 export type Markdown = { path: Path } & TfsEntity;
 export type MarkdownError = "no matches" | "invalid extension";

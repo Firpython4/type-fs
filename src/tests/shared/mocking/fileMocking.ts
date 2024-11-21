@@ -1,7 +1,7 @@
 import * as fileSystem from "node:fs";
 import path from "node:path";
-import { type Path } from "~/types/helpers";
 import { safeJoin, toPath } from "~/fileManagement";
+import { type Path} from "~/types";
 
 export type FileMocker = {
   getCurrentDirectory(): string & { __brand: "path" };
