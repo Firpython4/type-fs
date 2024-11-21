@@ -24,7 +24,7 @@ const textFile = (): TfsTextFile => {
       }
 
       return ok(contentFile.okValue);
-    },
+    }
   };
 
   return schema;

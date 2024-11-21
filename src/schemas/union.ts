@@ -24,12 +24,12 @@ const union = <T extends Readonly<[...TfsAnyValue[]]>>(
 
         return ok({
           option: typeSafeIndex,
-          value: parseResult.okValue as InferOk<T[ArrayIndices<T>]>,
+          value: parseResult.okValue as InferOk<T[ArrayIndices<T>]>
         });
       }
 
       return error("no matches" as const);
-    },
+    }
   };
 
   return schema;

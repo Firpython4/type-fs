@@ -33,9 +33,9 @@ const url = (): TfsUrl => {
       return ok({
         type: "url",
         name: getName(pathToParse),
-        url: urlOkValue,
+        url: urlOkValue
       });
-    },
+    }
   };
 
   return schema;

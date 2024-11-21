@@ -17,11 +17,11 @@ type OptionalMixin<T> = {
 };
 
 export type Parser<OkType, ErrorType> = (
-  path: Path,
+  path: Path
 ) => Promise<Result<OkType, ErrorType>> | Result<OkType, ErrorType>;
 
 export type ParserWithName<OkType, ErrorType> = (
-  pattern?: string,
+  pattern?: string
 ) => TfsValueWithName<OkType, ErrorType>;
 
 export type TfsValue<Ok, Error> = {

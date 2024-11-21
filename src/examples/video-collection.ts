@@ -5,12 +5,12 @@ import typefs from "~/typefs";
 const videoUrls = typefs.array(typefs.url()).withName("videos");
 
 async function example() {
-    const video = await videoUrls.parse(toPath("videos"))
+  const video = await videoUrls.parse(toPath("videos"));
 
-    if (video.wasResultSuccessful) {
-        //Inferred as Url[]
-        const videoUrls = video.okValue.parsed;
+  if (video.wasResultSuccessful) {
+    //Inferred as Url[]
+    const videoUrls = video.okValue.parsed;
 
-        videoUrls.map(url => console.log(url.url));
-    }
+    videoUrls.map(url => console.log(url.url));
+  }
 }

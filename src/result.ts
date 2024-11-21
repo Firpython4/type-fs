@@ -1,37 +1,37 @@
 export type Result<OkType, ErrorType> =
   | {
-      wasResultSuccessful: true;
-      okValue: OkType;
-    }
+  wasResultSuccessful: true;
+  okValue: OkType;
+}
   | {
-      wasResultSuccessful: false;
-      errorValue: ErrorType;
-    };
+  wasResultSuccessful: false;
+  errorValue: ErrorType;
+};
 
 export function ok<OkType>(okValue: OkType) {
   return {
     wasResultSuccessful: true as const,
-    okValue,
+    okValue
   };
 }
 
 export async function okAsync<OkType>(okValue: Promise<OkType>) {
   return {
     wasResultSuccessful: true as const,
-    okValue: await okValue,
+    okValue: await okValue
   };
 }
 
 export function error<ErrorType>(errorValue: ErrorType) {
   return {
     wasResultSuccessful: false as const,
-    errorValue,
+    errorValue
   };
 }
 
 export function map<OkType, ErrorType, NewOkType>(
   result: Result<OkType, ErrorType>,
-  mapper: (okValue: OkType) => NewOkType,
+  mapper: (okValue: OkType) => NewOkType
 ): Result<NewOkType, ErrorType> {
   if (result.wasResultSuccessful) {
     return ok(mapper(result.okValue));

@@ -13,7 +13,7 @@ export const typefs = {
   image,
   array,
   object,
-  union,
+  union
 };
 
 export default typefs;

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { relativePath, toPath } from "~/fileManagement";
+import { toPath } from "~/fileManagement";
 import typefs from "~/typefs";
 import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
@@ -18,20 +18,22 @@ test("The array schema should parse an array of urls", async () => {
     expect(arrayResult.okValue.length).toBe(2);
     expect(arrayResult.okValue[0]!.url).toBe("https://www.google.com");
     expect(arrayResult.okValue[1]!.url).toBe("https://youtube.com");
-  })})
+  });
+});
 
 test("The array schema should parse an array of objects", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest"))
-    .createDirectory(toPath("object"))
-    .createFile(toPath("a.url"), "https://www.google.com")
-    .goBack()
-    .createDirectory(toPath("object2"))
-    .createFile(toPath("b.url"), "https://youtube.com")
+    const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest"))
+      .createDirectory(toPath("object"))
+      .createFile(toPath("a.url"), "https://www.google.com")
+      .goBack()
+      .createDirectory(toPath("object2"))
+      .createFile(toPath("b.url"), "https://youtube.com");
 
-  await usingFileMockerAsync(fileMocker, async () => {
-    const arrayResult = await typefs.array(typefs.object({
-      url: typefs.url(),
-    })).parse(fileMocker.getCurrentDirectory())
-    expect(arrayResult.wasResultSuccessful).toBeTruthy();
-  })}
-)
+    await usingFileMockerAsync(fileMocker, async () => {
+      const arrayResult = await typefs.array(typefs.object({
+        url: typefs.url()
+      })).parse(fileMocker.getCurrentDirectory());
+      expect(arrayResult.wasResultSuccessful).toBeTruthy();
+    });
+  }
+);

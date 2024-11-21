@@ -3,7 +3,7 @@ export type StringWithInnerSubstring<Str extends string> =
 
 export function includesInner<Str extends string>(
   stringValue: string,
-  searchString: Str,
+  searchString: Str
 ): stringValue is StringWithInnerSubstring<Str> {
   return (
     stringValue.includes(searchString) &&

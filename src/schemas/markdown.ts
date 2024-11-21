@@ -6,7 +6,6 @@ import {
   type TfsMarkdown,
   type TfsMarkdownWithContent
 } from "~/types/markdown";
-import { promisify } from "node:util";
 import path from "node:path";
 import { error, ok } from "~/result";
 import { errorHandler, optionalWrapper, withNameHandler } from "~/wrappers";
@@ -34,7 +33,7 @@ const parseMarkdownWithContent =
       }
 
       const matterResult: matter.GrayMatterFile<Buffer> = matter(
-        contentFile.okValue,
+        contentFile.okValue
       );
       const processedContent = await remark()
         .use(html)
@@ -58,14 +57,14 @@ const parseMarkdownWithContent =
 
       const newLineReplaced = newLineMapped.reduce(
         (previous, current) => Object.assign(previous, current),
-        {},
+        {}
       );
 
       if (matters.safeParse(matterData)) {
         return ok({
           matters: newLineReplaced as z.infer<typeof matters>,
           html: processedContent.toString(),
-          asString: processedAsString.toString(),
+          asString: processedAsString.toString()
         });
       } else {
         return error("invalid matter" as const);
@@ -80,7 +79,7 @@ const withMatter: MarkdownWithMatter =
         withName: (namePattern?: string) => withNameHandler(schema, namePattern),
         optional: () => optionalWrapper(schema),
         isOptional: false,
-        parse: parseMarkdownWithContent(matters),
+        parse: parseMarkdownWithContent(matters)
       };
 
       return schema;
@@ -96,7 +95,7 @@ const parseMarkdown = (): Parser<Markdown, MarkdownError> =>
 
     return ok({
       name: path.basename(inPath, path.extname(inPath)),
-      path: inPath,
+      path: inPath
     });
   };
 
@@ -107,7 +106,7 @@ const markdown = (): TfsMarkdown => {
     optional: () => optionalWrapper(schema),
     isOptional: false,
     withMatter: withMatter(),
-    parse: parseMarkdown(),
+    parse: parseMarkdown()
   };
 
   return schema;

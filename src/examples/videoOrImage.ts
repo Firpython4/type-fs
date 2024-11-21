@@ -13,15 +13,15 @@ async function example() {
       /* Both are inferred as numbers because
       videoOrImage.value is inferred as an Image */
       const [width, height] = [
-      videoOrImage.value.width,
-      videoOrImage.value.height,
-    ];
-    
-    console.log(width, height);
+        videoOrImage.value.width,
+        videoOrImage.value.height
+      ];
+
+      console.log(width, height);
     } else {
       //videoOrImage.value is inferred as a Url
       const videoUrl = videoOrImage.value.url;
-      
+
       console.log(videoUrl);
     }
   }

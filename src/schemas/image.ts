@@ -52,9 +52,9 @@ const image = (linkCutoff?: string): TfsImage => {
         name: getName(inPath),
         width: sizeValue.width,
         height: sizeValue.height,
-        url: url,
+        url: url
       });
-    },
+    }
   };
   return schema;
 };

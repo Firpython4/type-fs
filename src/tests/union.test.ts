@@ -2,7 +2,7 @@
 import { toPath } from "~/fileManagement";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import typefs from "~/typefs";
-import { test, expect } from "vitest";
+import { expect, test } from "vitest";
 
 test("The union schema should parse a union", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/union/unionTest"))
@@ -11,7 +11,7 @@ test("The union schema should parse a union", async () => {
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("c.jpg"));
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const unionSchema =  typefs.union(
+    const unionSchema = typefs.union(
       typefs.url(),
       typefs.markdown(),
       typefs.image("test-resources")
@@ -56,5 +56,5 @@ test("The union schema should parse a union", async () => {
 
     expect(thirdResult.okValue.value.name).toBe("c");
     expect(thirdResult.okValue.value.url).toBe("/union/unionTest/c.jpg");
-  })
+  });
 });

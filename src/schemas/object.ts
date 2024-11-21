@@ -7,7 +7,7 @@ import { couldNotReadDirectory, Path } from "~/types/helpers";
 
 const objectParse =
   <T extends TfsRecord>(
-    fields: T,
+    fields: T
   ): Parser<InferTfsObject<T>, typeof couldNotReadDirectory | "no matches"> =>
     async (path: Path) => {
       const dirents = await safeReadDir(path);
@@ -30,25 +30,24 @@ const objectParse =
             }
           }
 
-          if (!value.isOptional)
-          {
+          if (!value.isOptional) {
             return error("no matches" as const);
           }
 
-          return ok({[key as KeyType]: undefined}) as ResultType;
-        }),
+          return ok({ [key as KeyType]: undefined }) as ResultType;
+        })
       );
 
       const filtered = result.filter(
         (
-          value: PromiseSettledResult<ResultType>,
+          value: PromiseSettledResult<ResultType>
         ): value is PromiseFulfilledResult<ResultType> =>
-          value.status === "fulfilled",
+          value.status === "fulfilled"
       );
       const valueMapped = filtered.map((value) => value.value);
       const okValues = valueMapped.filter(
         (value): value is { wasResultSuccessful: true; okValue: NewRecordType } =>
-          value.wasResultSuccessful,
+          value.wasResultSuccessful
       );
       const mapped = okValues.map((value) => value.okValue);
 
@@ -59,7 +58,7 @@ const objectParse =
       const spread = mapped.reduce(
         (previous, current) =>
           Object.assign(previous, current) as Record<KeyType, unknown>,
-        {},
+        {}
       ) as InferTfsObject<T>;
       return ok(spread);
     };
@@ -70,7 +69,7 @@ const object = <T extends TfsRecord>(fields: T): TfsObject<T> => {
     parse: objectParse(fields),
     optional: () => optionalWrapper(schema),
     isOptional: false,
-    withName: (pattern?: string) => withNameHandler(schema, pattern),
+    withName: (pattern?: string) => withNameHandler(schema, pattern)
   };
 
   return schema;

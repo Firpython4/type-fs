@@ -13,9 +13,9 @@ export type TfsMarkdownWithContent<T extends ZodRawShape> = TfsValue<
 >;
 
 export type MarkdownWithMatter = (
-  namePattern?: string,
+  namePattern?: string
 ) => <T extends ZodRawShape>(
-  matters: ZodObject<T>,
+  matters: ZodObject<T>
 ) => TfsMarkdownWithContent<T>;
 export type Markdown = { path: Path } & TfsEntity;
 export type MarkdownError = "no matches" | "invalid extension";

@@ -1,11 +1,11 @@
 import { error, map } from "~/result";
 import path from "node:path";
-import { TfsValue, TfsValueWithName, TfsOptional } from "~/types/value";
+import { TfsOptional, TfsValue, TfsValueWithName } from "~/types/value";
 import { Path } from "~/types/helpers";
 
 export function errorHandler<OkValue, ErrorValue>(
   parser: TfsValue<OkValue, ErrorValue>,
-  handler: (error: ErrorValue, inPath: Path) => void,
+  handler: (error: ErrorValue, inPath: Path) => void
 ) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { parse, ...rest } = parser;
@@ -18,13 +18,13 @@ export function errorHandler<OkValue, ErrorValue>(
       }
 
       return result;
-    },
+    }
   };
 }
 
 export function withNameHandler<OkType, ErrorType>(
   schema: TfsValue<OkType, ErrorType>,
-  namePattern?: string,
+  namePattern?: string
 ) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { parse, withErrorHandler, ...rest } = schema;
@@ -44,21 +44,21 @@ export function withNameHandler<OkType, ErrorType>(
 
       const parseResult = await schema.parse(inPath);
       return map(parseResult, (okParse) => ({ name, parsed: okParse }));
-    },
+    }
   };
 
   return newSchema;
 }
 
 export function optionalWrapper<T extends TfsValue<OkType, unknown>, OkType>(
-  schema: T,
+  schema: T
 ) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const newSchema: TfsOptional<OkType> = {
     ...schema,
     isOptional: true,
     withErrorHandler: (_handler) => newSchema,
-    withName: (namePattern?: string) => withNameHandler(newSchema, namePattern),
+    withName: (namePattern?: string) => withNameHandler(newSchema, namePattern)
   };
 
   return newSchema;

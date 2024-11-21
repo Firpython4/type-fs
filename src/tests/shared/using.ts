@@ -5,6 +5,7 @@ export function using<T>(resource: T, func: (resource: T) => void, cleanup: (res
     cleanup(resource);
   }
 }
+
 export async function usingAsync<T>(resource: T, func: (resource: T) => Promise<void>, cleanup: (resource: T) => void) {
   try {
     await func(resource);
