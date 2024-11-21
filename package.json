@@ -18,10 +18,16 @@
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
     "eslint": "^8.57.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "vitest": "^2.1.5"
   },
   "ct3aMetadata": {
     "initVersion": "7.24.0"
+  },
+  "scripts": {
+    "test": "vitest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write src"
   },
   "packageManager": "pnpm@7.27.1"
 }

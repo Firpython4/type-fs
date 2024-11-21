@@ -1,11 +1,11 @@
-import { safePath } from "../fileManagement";
+import { toPath } from "../fileManagement";
 import { typefs } from "../schemas";
 
 //matches a folder named "videos" that contains .url files
 const videoUrls = typefs.array(typefs.url()).withName("videos");
 
 async function example() {
-    const video = await videoUrls.parse(safePath("videos"))
+    const video = await videoUrls.parse(toPath("videos"))
 
     if (video.wasResultSuccessful) {
         //Inferred as Url[]

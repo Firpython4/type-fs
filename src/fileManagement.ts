@@ -11,7 +11,7 @@ export async function getFileRelative(filePath: string) {
 }
 
 export function getPath(dirent: Dirent) {
-  return safePath(path.join(dirent.path, dirent.name));
+  return toPath(path.join(dirent.path, dirent.name));
 }
 
 export async function readFileSafe(path: Path) {
@@ -30,12 +30,16 @@ export async function sizeOfAsync(input: string) {
   }
 }
 
-export function safePath(path: string) {
+export function toPath(path: string) {
   return path as Path;
 }
 
+export function safeJoin(path1: Path, path2: Path) {
+  return toPath(path.join(path1, path2));
+}
+
 export function relativePath(relativePath: Path) {
-  return safePath(path.join(process.cwd(), relativePath));
+  return toPath(path.join(process.cwd(), relativePath));
 }
 
 export async function safeReadDir(path: Path) {

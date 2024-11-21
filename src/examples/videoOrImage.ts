@@ -1,11 +1,11 @@
-import { safePath } from "../fileManagement";
+import { toPath } from "../fileManagement";
 import { typefs } from "../schemas";
 
 //Matches either an image inside the "public/" folder or a .url file
 const videoOrImageSchema = typefs.union(typefs.image("public/"), typefs.url());
 
 async function example() {
-  const parseResult = await videoOrImageSchema.parse(safePath("video.url"));
+  const parseResult = await videoOrImageSchema.parse(toPath("video.url"));
   if (parseResult.wasResultSuccessful) {
     //Inferred as a discriminated union of Image and Url
     const videoOrImage = parseResult.okValue;
