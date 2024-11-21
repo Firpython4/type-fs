@@ -40,5 +40,12 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+#JetBrains
 .idea
+
+#Next Image Export Optimizer
 public/**/nextImageExportOptimizer
+
+#build
+/dist/
