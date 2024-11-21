@@ -5,19 +5,20 @@ import sizeOf from "image-size";
 import { error, ok, okAsync } from "./result";
 import { type Path } from "./types";
 import { readdir } from "node:fs/promises";
+import process from "node:process";
 
 export async function getFileRelative(filePath: string) {
   return await fileSystem.readFile(path.join(process.cwd(), filePath));
 }
 
 export function getPath(dirent: Dirent) {
-  return toPath(path.join(dirent.path, dirent.name));
+  return toPath(path.join(dirent.parentPath, dirent.name));
 }
 
 export async function readFileSafe(path: Path) {
   try {
     return okAsync(fileSystem.readFile(path));
-  } catch (e) {
+  } catch {
     return error("could not read file" as const);
   }
 }
@@ -25,7 +26,7 @@ export async function readFileSafe(path: Path) {
 export async function sizeOfAsync(input: string) {
   try {
     return okAsync(promisify(sizeOf)(input));
-  } catch (e) {
+  } catch {
     return error("could not open file");
   }
 }
@@ -45,7 +46,7 @@ export function relativePath(relativePath: Path) {
 export async function safeReadDir(path: Path) {
   try {
     return ok(await readdir(path, { withFileTypes: true }));
-  } catch (e) {
+  } catch {
     return error("could not read directory");
   }
 }

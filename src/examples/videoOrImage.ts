@@ -1,5 +1,6 @@
-import { toPath } from "../fileManagement";
-import { typefs } from "../schemas";
+import { toPath } from "~/fileManagement";
+import { typefs } from "~/schemas";
+import console from "node:console";
 
 //Matches either an image inside the "public/" folder or a .url file
 const videoOrImageSchema = typefs.union(typefs.image("public/"), typefs.url());

@@ -1,5 +1,6 @@
-import { toPath } from "../fileManagement";
-import { typefs } from "../schemas";
+import { toPath } from "~/fileManagement";
+import { typefs } from "~/schemas";
+import console from "node:console";
 
 //matches a folder named "videos" that contains .url files
 const videoUrls = typefs.array(typefs.url()).withName("videos");

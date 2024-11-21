@@ -1,6 +1,7 @@
 import { type ZodObject, type ZodRawShape, type z } from "zod";
 import { type Brand } from "./typeSafety";
 import { type Result } from "./result";
+import { type Buffer } from "node:buffer";
 
 export type TfsValue<Ok, Error> = {
   withErrorHandler: (handler: (error: Error) => void) => TfsValue<Ok, Error>;
@@ -28,7 +29,7 @@ export type TfsMarkdownWithContent<T extends ZodRawShape> = TfsValue<
   "could not read file" | "invalid matter" | MarkdownError
 >;
 
-export type TypeOfZodObject = ReturnType<typeof z.object<T>>;
+export type TypeOfZodObject<T extends ZodRawShape> = ReturnType<typeof z.object<T>>;
 
 export type MarkdownWithMatter = (
   namePattern?: string,

@@ -1,4 +1,5 @@
 import { error, type ExtractOkType, map, ok, type Result } from "./result";
+import { type Buffer } from "node:buffer";
 import {
   type Path,
   type TfsValue,
@@ -462,7 +463,7 @@ function withNameHandler<OkType, ErrorType>(
 function optionalWrapper<T extends TfsValue<OkType, unknown>, OkType>(
   schema: T,
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+   
   const newSchema: TfsOptional<OkType> = {
     ...schema,
     isOptional: true,
