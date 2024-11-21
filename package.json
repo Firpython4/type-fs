@@ -29,8 +29,8 @@
   "scripts": {
     "test": "vitest",
     "lint": "eslint src --ext .ts",
-    "format": "prettier --write src"
-    "build": "tsup",
+    "format": "prettier --write src",
+    "build": "tsup"
   },
   "packageManager": "pnpm@7.27.1"
 }
