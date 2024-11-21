@@ -3,6 +3,7 @@ import { toPath } from "~/fileManagement";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import { expect, test } from "vitest";
 import {typefs} from "~/schemas";
+import { couldNotReadDirectory } from "~/types";
 
 test("The union schema should parse a union", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/union/unionTest"))
@@ -56,5 +57,40 @@ test("The union schema should parse a union", async () => {
 
     expect(thirdResult.okValue.value.name).toBe("c");
     expect(thirdResult.okValue.value.url).toBe("/union/unionTest/c.jpg");
+  });
+});
+
+test("The union schema should fail if the file does not exist", async () => {
+  const unionSchema = typefs.union(
+    typefs.url(),
+    typefs.markdown(),
+    typefs.image("test-resources")
+  );
+
+  const result = await unionSchema.parse(toPath("test-resources/union/doesNotExist"));
+  if (result.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+
+  expect(result.errorValue).toBe("file does not exist");
+});
+
+test("The union schema should fail if the file is not any of the variants", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest"))
+    .createFile(toPath("notAUnion.txt"), "Hello World");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const unionSchema = typefs.union(
+      typefs.url(),
+      typefs.markdown(),
+      typefs.image("test-resources")
+    );
+
+    const result = await unionSchema.parse(fileMocker.getCurrentFile());
+    if (result.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+
+    expect(result.errorValue).toBe("no matches");
   });
 });

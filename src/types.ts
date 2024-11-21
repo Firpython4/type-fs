@@ -95,7 +95,7 @@ export interface TfsArray<ElementType extends TfsAnyValue>
 
 export type TfsUnion<T extends Readonly<[...TfsAnyValue[]]>> = TfsValue<
   InferTfsUnion<T>,
-  "no matches"
+  "no matches" | "file does not exist"
 >;
 
 export type TfsOptional<OkType> = TfsValue<OkType | undefined, unknown> & { isOptional: true };

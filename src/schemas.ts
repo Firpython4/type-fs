@@ -267,6 +267,12 @@ const union = <T extends Readonly<[...TfsAnyValue[]]>>(
     optional: () => optionalWrapper(schema),
     isOptional: false,
     async parse(path: Path) {
+      try {
+        await access(path, constants.R_OK);
+      } catch {
+        return error("file does not exist" as const);
+      }
+
       for (const [option, type] of types.entries()) {
         const typeSafeIndex = option as ArrayIndices<T>;
 
