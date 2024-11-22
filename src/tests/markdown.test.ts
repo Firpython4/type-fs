@@ -111,18 +111,21 @@ test("A mardown schema with an error handler should parse a markdown file with t
       .withErrorHandler(spy)
       .withName("test")
       .parse(fileMocker.getCurrentFile());
+
     expect(markdownResult.wasResultSuccessful).toBeTruthy();
+
     if (!markdownResult.wasResultSuccessful) {
       throw new Error("Expected error");
     }
+
     expect(markdownResult.okValue.name).toBe("test");
     expect(spy).not.toHaveBeenCalled();
   });
 });
 
 test("A markdown schema with an error handler should fail and call the error handler if the file does not exist", async () => {
-  let i = 0;
   const spy = vitest.fn();
+
   const markdownResult = await typefs.markdown()
     .withName("test")
     .withErrorHandler(spy)
