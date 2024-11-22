@@ -6,7 +6,7 @@ import { z } from "zod";
 import {typefs} from "~/schemas";
 
 test("The markdown schema should parse a markdown file", async () => {
-  const inPath = toPath("test-resources/markdown/markdownTest");
+  const inPath = toPath("test-resources/markdown/markdownTest1");
   const fileMocker = createFileMocker(inPath)
     .createFile(toPath("test.md"), "# Hello World");
 
@@ -28,7 +28,7 @@ test("The markdown schema should parse a markdown file", async () => {
 });
 
 test("The markdown schema should parse a markdown file with matter", async () => {
-  const inPath = toPath("test-resources/markdown/markdownTest");
+  const inPath = toPath("test-resources/markdown/markdownTest2");
   const fileMocker = createFileMocker(inPath)
     .copyFile(toPath("test-resources/markdownWithMatter.md"), toPath("test.md"));
 
@@ -57,7 +57,7 @@ test("The markdown schema should fail if the file does not exist", async () => {
 });
 
 test("The markdown schema should fail if the file is not a markdown file", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/markdown/markdownTest"))
+  const fileMocker = createFileMocker(toPath("test-resources/markdown/markdownTest3"))
     .createFile(toPath("notAMarkdown.txt"), "Hello World");
 
   await usingFileMockerAsync(fileMocker, async () => {
@@ -71,7 +71,7 @@ test("The markdown schema should fail if the file is not a markdown file", async
 });
 
 test("A markdown schema with a name should parse a markdown file with the given name", async () => {
-  const inPath = toPath("test-resources/markdown/markdownTest");
+  const inPath = toPath("test-resources/markdown/markdownTest4");
   const fileMocker = createFileMocker(inPath)
     .createFile(toPath("test.md"), "# Hello World");
 
@@ -86,7 +86,7 @@ test("A markdown schema with a name should parse a markdown file with the given 
 });
 
 test("A markdown schema with a name should fail if the file does not match the name", async () => {
-  const inPath = toPath("test-resources/markdown/markdownTest");
+  const inPath = toPath("test-resources/markdown/markdownTest5");
   const fileMocker = createFileMocker(inPath)
     .createFile(toPath("test.md"), "# Hello World");
 
@@ -101,7 +101,7 @@ test("A markdown schema with a name should fail if the file does not match the n
 });
 
 test("A markdown schema with an error handler should parse a markdown file with the given name", async () => {
-  const inPath = toPath("test-resources/markdown/markdownTest2");
+  const inPath = toPath("test-resources/markdown/markdownTest6");
   const fileMocker = createFileMocker(inPath)
     .createFile(toPath("test.md"), "# Hello World");
 

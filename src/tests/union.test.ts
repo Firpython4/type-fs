@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 import {typefs} from "~/schemas";
 
 test("The union schema should parse a union", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest"))
+  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest1"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.md"), "# Hello World")
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("c.jpg"));
@@ -17,7 +17,7 @@ test("The union schema should parse a union", async () => {
       typefs.image("test-resources")
     );
 
-    const firstResult = await unionSchema.parse(toPath("test-resources/union/unionTest/a.url"));
+    const firstResult = await unionSchema.parse(toPath("test-resources/union/unionTest1/a.url"));
     expect(firstResult.wasResultSuccessful).toBeTruthy();
     if (!firstResult.wasResultSuccessful) {
       throw new Error(firstResult.errorValue);
@@ -30,7 +30,7 @@ test("The union schema should parse a union", async () => {
 
     expect(firstResult.okValue.value.url).toBe("https://www.google.com");
 
-    const secondResult = await unionSchema.parse(toPath("test-resources/union/unionTest/b.md"));
+    const secondResult = await unionSchema.parse(toPath("test-resources/union/unionTest1/b.md"));
     expect(secondResult.wasResultSuccessful).toBeTruthy();
     if (!secondResult.wasResultSuccessful) {
       throw new Error(secondResult.errorValue);
@@ -41,9 +41,9 @@ test("The union schema should parse a union", async () => {
     }
 
     expect(secondResult.okValue.value.name).toBe("b");
-    expect(secondResult.okValue.value.path).toBe("test-resources/union/unionTest/b.md");
+    expect(secondResult.okValue.value.path).toBe("test-resources/union/unionTest1/b.md");
 
-    const thirdResult = await unionSchema.parse(toPath("test-resources/union/unionTest/c.jpg"));
+    const thirdResult = await unionSchema.parse(toPath("test-resources/union/unionTest1/c.jpg"));
     expect(thirdResult.wasResultSuccessful).toBeTruthy();
     if (!thirdResult.wasResultSuccessful) {
       throw new Error(thirdResult.errorValue);
@@ -55,7 +55,7 @@ test("The union schema should parse a union", async () => {
     }
 
     expect(thirdResult.okValue.value.name).toBe("c");
-    expect(thirdResult.okValue.value.url).toBe("/union/unionTest/c.jpg");
+    expect(thirdResult.okValue.value.url).toBe("/union/unionTest1/c.jpg");
   });
 });
 
@@ -75,7 +75,7 @@ test("The union schema should fail if the file does not exist", async () => {
 });
 
 test("The union schema should fail if the file is not any of the variants", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest"))
+  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest2"))
     .createFile(toPath("notAUnion.txt"), "Hello World");
 
   await usingFileMockerAsync(fileMocker, async () => {
