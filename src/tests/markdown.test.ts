@@ -1,4 +1,4 @@
-﻿import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
+import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
 import { readFileSafe, toPath } from "~/fileManagement";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import { expect, test, vitest } from "vitest";
