@@ -100,7 +100,7 @@ test("A markdown schema with a name should fail if the file does not match the n
   });
 });
 
-test("A mardown schema with an error handler should parse a markdown file with the given name", async () => {
+test("A markdown schema with an error handler should parse a markdown file with the given name", async () => {
   const inPath = toPath("test-resources/markdown/markdownTest2");
   const fileMocker = createFileMocker(inPath)
     .createFile(toPath("test.md"), "# Hello World");

@@ -72,19 +72,6 @@ test("A image schema with a name should fail if the file does not match the name
   });
 });
 
-test("A image schema with a name should fail if the file does not match the name", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest"))
-    .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("gratisography-cool-cat.jpg"));
-
-  await usingFileMockerAsync(fileMocker, async () => {
-    const imageResult = await typefs.image().withName("wrong-name").parse(fileMocker.getCurrentFile());
-    if (imageResult.wasResultSuccessful) {
-      throw new Error("Expected error");
-    }
-    expect(imageResult.errorValue).toBe("name does not match");
-  });
-});
-
 test("A image schema with an error handler should parse a image file with the given name", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/image/imageTest"))
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("gratisography-cool-cat.jpg"));
