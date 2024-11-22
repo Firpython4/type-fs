@@ -59,7 +59,7 @@ test("imageTest4: A image schema with a name should parse a image file with the 
   });
 });
 
-test("imageTest5: A image schema with a name should fail if the file does not match the name", async () => {
+test("imageTest5: A image schema with a name should fail if the file does not match the name pattern", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/image/imageTest5"))
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("gratisography-cool-cat.jpg"));
 

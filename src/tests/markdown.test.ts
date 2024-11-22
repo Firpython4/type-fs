@@ -85,7 +85,7 @@ test("markdownTest5: A markdown schema with a name should parse a markdown file 
   });
 });
 
-test("markdownTest6: A markdown schema with a name should fail if the file does not match the name", async () => {
+test("markdownTest6: A markdown schema with a name should fail if the file does not match the name pattern", async () => {
   const inPath = toPath("test-resources/markdown/markdownTest6");
   const fileMocker = createFileMocker(inPath)
     .createFile(toPath("test.md"), "# Hello World");

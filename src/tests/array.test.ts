@@ -65,7 +65,7 @@ test("arrayTest4: An array schema with a name should parse an array of urls", as
   });
 });
 
-test("arrayTest5: An array schema with a name should fail if the file does not match the name", async () => {
+test("arrayTest5: An array schema with a name should fail if the file does not match the name pattern", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest5"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.url"), "https://youtube.com");

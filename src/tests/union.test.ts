@@ -121,7 +121,7 @@ test("unionTest4: A named union schema should parse a union", async () => {
   });
 });
 
-test("unionTest5: A named union schema should fail if the file does not match the name", async () => {
+test("unionTest5: A named union schema should fail if the file does not match the name pattern", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/union/unionTest5"))
     .createFile(toPath("a.url"), "https://www.google.com");
 
