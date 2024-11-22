@@ -4,7 +4,7 @@ import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import { expect, test } from "vitest";
 import {typefs} from "~/schemas";
 
-test("The union schema should parse a union", async () => {
+test("unionTest1: The union schema should parse a union", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/union/unionTest1"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.md"), "# Hello World")
@@ -59,7 +59,7 @@ test("The union schema should parse a union", async () => {
   });
 });
 
-test("The union schema should fail if the file does not exist", async () => {
+test("unionTest2: The union schema should fail if the file does not exist", async () => {
   const unionSchema = typefs.union(
     typefs.url(),
     typefs.markdown(),
@@ -74,8 +74,8 @@ test("The union schema should fail if the file does not exist", async () => {
   expect(result.errorValue).toBe("file does not exist");
 });
 
-test("The union schema should fail if the file is not any of the variants", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest2"))
+test("unionTest3: The union schema should fail if the file is not any of the variants", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest3"))
     .createFile(toPath("notAUnion.txt"), "Hello World");
 
   await usingFileMockerAsync(fileMocker, async () => {
@@ -91,5 +91,52 @@ test("The union schema should fail if the file is not any of the variants", asyn
     }
 
     expect(result.errorValue).toBe("no matches");
+  });
+});
+
+test("unionTest4: A named union schema should parse a union", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest4"))
+    .createFile(toPath("a.url"), "https://www.google.com");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const unionSchema = typefs.union(
+      typefs.url(),
+      typefs.markdown(),
+      typefs.image("test-resources")
+    ).withName("a");
+
+    const firstResult = await unionSchema.parse(toPath("test-resources/union/unionTest4/a.url"));
+    expect(firstResult.wasResultSuccessful).toBeTruthy();
+    if (!firstResult.wasResultSuccessful) {
+      throw new Error(firstResult.errorValue);
+    }
+
+    expect(firstResult.okValue.name).toBe("a");
+    expect(firstResult.okValue.parsed.option).toBe(0);
+    if (firstResult.okValue.parsed.option !== 0) {
+      throw new Error("Invalid option");
+    }
+
+    expect(firstResult.okValue.parsed.value.url).toBe("https://www.google.com");
+  });
+});
+
+test("unionTest5: A named union schema should fail if the file does not match the name", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/union/unionTest5"))
+    .createFile(toPath("a.url"), "https://www.google.com");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const unionSchema = typefs.union(
+      typefs.url(),
+      typefs.markdown(),
+      typefs.image("test-resources")
+    ).withName("b");
+
+    const result = await unionSchema.parse(toPath("test-resources/union/unionTest5/a.url"));
+    if (result.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+
+    expect(result.errorValue).toBe("name does not match");
   });
 });

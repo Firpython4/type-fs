@@ -4,7 +4,7 @@ import { expect, test, vitest } from "vitest";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import {typefs} from "~/schemas";
 
-test("The image schema should parse an image", async () => {
+test("imageTest1: The image schema should parse an image", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/image/imageTest1"))
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("gratisography-cool-cat.jpg"));
 
@@ -22,7 +22,7 @@ test("The image schema should parse an image", async () => {
   });
 });
 
-test("The image schema should fail if the file does not exist", async () => {
+test("imageTest2: The image schema should fail if the file does not exist", async () => {
   const imageResult = await typefs.image().parse(toPath("test-resources/image/doesNotExist/imageTest.jpg"));
   if (imageResult.wasResultSuccessful) {
     throw new Error("Expected error");
@@ -31,8 +31,8 @@ test("The image schema should fail if the file does not exist", async () => {
   expect(imageResult.errorValue).toBe("could not read file");
 });
 
-test("The image schema should fail if the file is not an image", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest2"))
+test("imageTest3: The image schema should fail if the file is not an image", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest3"))
     .createFile(toPath("notAnImage.txt"), "Hello World");
 
   await usingFileMockerAsync(fileMocker, async () => {
@@ -45,8 +45,8 @@ test("The image schema should fail if the file is not an image", async () => {
   });
 });
 
-test("A image schema with a name should parse a image file with the given name", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest3"))
+test("imageTest4: A image schema with a name should parse a image file with the given name", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest4"))
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("gratisography-cool-cat.jpg"));
 
   await usingFileMockerAsync(fileMocker, async () => {
@@ -59,8 +59,8 @@ test("A image schema with a name should parse a image file with the given name",
   });
 });
 
-test("A image schema with a name should fail if the file does not match the name", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest4"))
+test("imageTest5: A image schema with a name should fail if the file does not match the name", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest5"))
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("gratisography-cool-cat.jpg"));
 
   await usingFileMockerAsync(fileMocker, async () => {
@@ -72,8 +72,8 @@ test("A image schema with a name should fail if the file does not match the name
   });
 });
 
-test("A image schema with an error handler should parse a image file with the given name", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest5"))
+test("imageTest6: A image schema with an error handler should parse a image file with the given name", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/image/imageTest6"))
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("gratisography-cool-cat.jpg"));
 
 
@@ -92,7 +92,7 @@ test("A image schema with an error handler should parse a image file with the gi
   });
 });
 
-test("A image schema with an error handler should fail and call the error handler if the file does not exist", async () => {
+test("imageTest7: A image schema with an error handler should fail and call the error handler if the file does not exist", async () => {
   const spy = vitest.fn();
   const imageResult = await typefs.image()
     .withName("gratisography-cool-cat")

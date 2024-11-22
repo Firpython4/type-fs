@@ -5,7 +5,7 @@ import { expect, test } from "vitest";
 import {typefs} from "~/schemas";
 import { couldNotReadDirectory } from "~/types";
 
-test("The object schema should parse an object", async () => {
+test("objectTest1: The object schema should parse an object", async () => {
   const fileMocker = createFileMocker(toPath("test-resources/object/objectTest1"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.md"), "# Hello World")
@@ -31,7 +31,7 @@ test("The object schema should parse an object", async () => {
   });
 });
 
-test("The object schema should fail if the directory does not exist", async () => {
+test("objectTest2: The object schema should fail if the directory does not exist", async () => {
   const objectResult = await typefs.object({
     url: typefs.url(),
     markdown: typefs.markdown(),
@@ -45,8 +45,8 @@ test("The object schema should fail if the directory does not exist", async () =
   expect(objectResult.errorValue).toBe(couldNotReadDirectory);
 });
 
-test("The object schema should fail if the directory is not a directory", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest2"))
+test("objectTest3: The object schema should fail if the directory is not a directory", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest3"))
     .createFile(toPath("notADirectory.txt"), "Hello World");
 
   await usingFileMockerAsync(fileMocker, async () => {
@@ -63,8 +63,8 @@ test("The object schema should fail if the directory is not a directory", async 
   });
 });
 
-test("The object schema should fail if the directory does not contain all the required files", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest3"))
+test("objectTest4: The object schema should fail if the directory does not contain all the required files", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest4"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.md"), "# Hello World");
 
@@ -82,8 +82,8 @@ test("The object schema should fail if the directory does not contain all the re
   });
 });
 
-test("Optional fields should be correctly parsed", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest4"))
+test("objectTest5: Optional fields should be correctly parsed", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest5"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.md"), "# Hello World")
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("c.jpg"));
@@ -104,12 +104,12 @@ test("Optional fields should be correctly parsed", async () => {
     expect(objectResult.okValue.markdown.name).toBe("b");
     expect(objectResult.okValue.markdown.path).toBe(safeJoin(fileMocker.getCurrentDirectory(), toPath("b.md")));
     expect(objectResult.okValue.image!.name).toBe("c");
-    expect(objectResult.okValue.image!.url).toBe("/object/objectTest4/c.jpg");
+    expect(objectResult.okValue.image!.url).toBe("/object/objectTest5/c.jpg");
   });
 });
 
-test("Optional fields should be correctly parsed with a name", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest5"))
+test("objectTest6: Optional fields should be correctly parsed with a name", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest6"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.md"), "# Hello World")
     .copyFile(toPath("test-resources/gratisography-cool-cat.jpg"), toPath("c.jpg"));
@@ -130,12 +130,12 @@ test("Optional fields should be correctly parsed with a name", async () => {
     expect(objectResult.okValue.markdown.name).toBe("b");
     expect(objectResult.okValue.markdown.path).toBe(safeJoin(fileMocker.getCurrentDirectory(), toPath("b.md")));
     expect(objectResult.okValue.image!.name).toBe("c");
-    expect(objectResult.okValue.image!.parsed.url).toBe("/object/objectTest5/c.jpg");
+    expect(objectResult.okValue.image!.parsed.url).toBe("/object/objectTest6/c.jpg");
   });
 });
 
-test("Optional fields should not cause an error if the file does not exist", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest6"))
+test("objectTest7: Optional fields should not cause an error if the file does not exist", async () => {
+  const fileMocker = createFileMocker(toPath("test-resources/object/objectTest7"))
     .createFile(toPath("a.url"), "https://www.google.com")
     .createFile(toPath("b.md"), "# Hello World");
 
