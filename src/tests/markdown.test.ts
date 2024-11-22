@@ -1,7 +1,7 @@
 ﻿import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
 import { readFileSafe, toPath } from "~/fileManagement";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
-import { expect, test } from "vitest";
+import { expect, test, vitest } from "vitest";
 import { z } from "zod";
 import {typefs} from "~/schemas";
 
@@ -98,4 +98,39 @@ test("A markdown schema with a name should fail if the file does not match the n
 
     expect(markdownResult.errorValue).toBe("name does not match");
   });
+});
+
+test("A mardown schema with an error handler should parse a markdown file with the given name", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest2");
+  const fileMocker = createFileMocker(inPath)
+    .createFile(toPath("test.md"), "# Hello World");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const spy = vitest.fn();
+    const markdownResult = await typefs.markdown()
+      .withErrorHandler(spy)
+      .withName("test")
+      .parse(fileMocker.getCurrentFile());
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+    expect(markdownResult.okValue.name).toBe("test");
+    expect(spy).not.toHaveBeenCalled();
+  });
+});
+
+test("A markdown schema with an error handler should fail and call the error handler if the file does not exist", async () => {
+  let i = 0;
+  const spy = vitest.fn();
+  const markdownResult = await typefs.markdown()
+    .withName("test")
+    .withErrorHandler(spy)
+    .parse(toPath("test-resources/markdown/doesNotExist/test.md"));
+
+  if (markdownResult.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+
+  expect(spy).toHaveBeenCalled();
 });
