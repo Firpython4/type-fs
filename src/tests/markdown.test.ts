@@ -69,3 +69,33 @@ test("The markdown schema should fail if the file is not a markdown file", async
     expect(markdownResult.errorValue).toBe("invalid extension");
   });
 });
+
+test("A markdown schema with a name should parse a markdown file with the given name", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest");
+  const fileMocker = createFileMocker(inPath)
+    .createFile(toPath("test.md"), "# Hello World");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs.markdown().withName("test").parse(fileMocker.getCurrentFile());
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error(markdownResult.errorValue);
+    }
+    expect(markdownResult.okValue.name).toBe("test");
+  });
+});
+
+test("A markdown schema with a name should fail if the file does not match the name", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest");
+  const fileMocker = createFileMocker(inPath)
+    .createFile(toPath("test.md"), "# Hello World");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs.markdown().withName("notTest").parse(fileMocker.getCurrentFile());
+    if (markdownResult.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+
+    expect(markdownResult.errorValue).toBe("name does not match");
+  });
+});

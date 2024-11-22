@@ -463,7 +463,7 @@ function withNameHandler<OkType, ErrorType>(
     withName: (namePattern?: string) => withNameHandler(newSchema, namePattern),
     optional: () => optionalWrapper(newSchema),
     async parse(inPath: Path) {
-      const name = path.basename(inPath);
+      const name = path.basename(inPath, path.extname(inPath));
       if (namePattern !== undefined) {
         const matches = name.match(namePattern);
         if (matches === null) {
