@@ -23,8 +23,6 @@ test("urlTest1: Should parse a valid URL from a .url file", async () => {
     });
   });
 
-
-
 test ("urlTest2: Should fail for files with an invalid extension", async() => {
     const fileMocker = createFileMocker(toPath("test-resources/url/urlTest2"))
     .createFile(toPath("invalid.txt"), "https://www.google.com");
@@ -39,7 +37,6 @@ test ("urlTest2: Should fail for files with an invalid extension", async() => {
         expect (result.errorValue).toBe("invalid extension");
     });
 });
-
 
 test("urlTest3: Should fail for invalid URL content", async () => {
     const fileMocker = createFileMocker(toPath("test-resources/url/urlTest3"))
