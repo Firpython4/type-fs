@@ -53,6 +53,12 @@ const url = (): TfsUrl => {
         return error("invalid extension" as const);
       }
 
+      try {
+        await access(pathToParse, constants.R_OK);
+      } catch {
+        return error("could not read file" as const);
+      }
+
       const url = await getUrlFromPath(pathToParse);
 
       if (!url.wasResultSuccessful) {
