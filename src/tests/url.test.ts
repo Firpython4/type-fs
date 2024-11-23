@@ -1,4 +1,4 @@
-import { safeJoin, toPath } from "~/fileManagement";
+import { toPath } from "~/fileManagement";
 import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import { expect, test } from "vitest";
