@@ -17,7 +17,7 @@ export function getPath(dirent: Dirent) {
 
 export async function readFileSafe(path: Path) {
   try {
-    return okAsync(fileSystem.readFile(path));
+    return await okAsync(fileSystem.readFile(path));
   } catch {
     return error("could not read file" as const);
   }

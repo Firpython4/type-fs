@@ -53,12 +53,6 @@ const url = (): TfsUrl => {
         return error("invalid extension" as const);
       }
 
-      try {
-        await access(pathToParse, constants.R_OK);
-      } catch {
-        return error("could not read file" as const);
-      }
-
       const url = await getUrlFromPath(pathToParse);
 
       if (!url.wasResultSuccessful) {
@@ -412,7 +406,7 @@ const textFile = (): TfsTextFile => {
       const txtExtension = ".txt";
       const extension = path.extname(inPath).toLowerCase();
       if (extension !== txtExtension) {
-        return error("no matches" as const);
+        return error("invalid extension" as const);
       }
 
       const contentFile = await readFileSafe(inPath);
