@@ -18,6 +18,7 @@
     "@types/eslint": "^8.56.12",
     "@typescript-eslint/eslint-plugin": "^8.15.0",
     "@typescript-eslint/parser": "^8.15.0",
+    "@vitest/coverage-v8": "2.1.5",
     "eslint": "^9.15.0",
     "prettier": "^3.3.3",
     "tsup": "^8.3.5",
@@ -31,6 +32,7 @@
   },
   "scripts": {
     "test": "vitest",
+    "coverage": "vitest run --coverage",
     "lint": "eslint .",
     "format": "prettier --write .",
     "fix": "eslint --fix .",
