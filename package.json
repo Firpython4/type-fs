@@ -38,5 +38,5 @@
     "fix": "eslint --fix .",
     "build": "tsup"
   },
-  "packageManager": "pnpm@7.27.1"
+  "packageManager": "pnpm@9.15.9"
 }
