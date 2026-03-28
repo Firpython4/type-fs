@@ -1,6 +1,5 @@
 import { error, ok } from "../result";
 import { type Path, type TfsTextFile } from "../types";
-import { type Buffer } from "node:buffer";
 import path from "node:path";
 import { readFileSafe } from "../fileManagement";
 import { errorHandler, withNameHandler, optionalWrapper } from "./common";

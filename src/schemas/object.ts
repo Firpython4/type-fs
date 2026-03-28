@@ -31,7 +31,7 @@ const objectParse =
     const result = await Promise.allSettled(
       Object.entries(fields).map(async ([key, value]) => {
         for (const dirent of dirents.okValue) {
-          const parsed = await value.parse(getPath(dirent));
+          const parsed = await value.parse(getPath(dirent, path));
           if (parsed.wasResultSuccessful) {
             return ok({ [key as KeyType]: parsed.okValue }) as ResultType;
           }

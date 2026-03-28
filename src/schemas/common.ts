@@ -3,16 +3,20 @@ import {
   type TfsValue,
   type TfsValueWithName,
   type TfsOptional,
-  type TfsAnyValue,
 } from "../types";
-import { error, map, type Result } from "../result";
+import { error, map } from "../result";
 import path from "node:path";
 
 export function errorHandler<OkValue, ErrorValue>(
   parser: TfsValue<OkValue, ErrorValue>,
   handler: (error: ErrorValue, inPath: Path) => void,
 ) {
-  const { parse, ...rest } = parser;
+  const rest = {
+    withErrorHandler: parser.withErrorHandler,
+    withName: parser.withName,
+    optional: parser.optional,
+    isOptional: parser.isOptional,
+  };
   return {
     ...rest,
     parse: async (path: Path) => {
@@ -30,7 +34,12 @@ export function withNameHandler<OkType, ErrorType>(
   schema: TfsValue<OkType, ErrorType>,
   namePattern?: string,
 ) {
-  const { parse, withErrorHandler, ...rest } = schema;
+  const rest = {
+    withErrorHandler: schema.withErrorHandler,
+    withName: schema.withName,
+    optional: schema.optional,
+    isOptional: schema.isOptional,
+  };
   const newSchema: TfsValueWithName<OkType, ErrorType> = {
     ...rest,
     withErrorHandler: (handler) => errorHandler(newSchema, handler),

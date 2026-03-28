@@ -11,8 +11,8 @@ export async function getFileRelative(filePath: string) {
   return await fileSystem.readFile(path.join(process.cwd(), filePath));
 }
 
-export function getPath(dirent: Dirent) {
-  return toPath(path.join(dirent.path, dirent.name));
+export function getPath(dirent: Dirent, basePath: string) {
+  return toPath(path.join(basePath, dirent.name));
 }
 
 export async function readFileSafe(path: Path) {

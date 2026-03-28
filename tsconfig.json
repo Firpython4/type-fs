@@ -16,6 +16,7 @@
 
     /* Bundled projects */
     "lib": ["dom", "dom.iterable", "ES2022"],
+    "types": ["node"],
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
@@ -26,14 +27,11 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["src/*"]
-    }
+    },
+
+    /* Deprecation handling */
+    "ignoreDeprecations": "6.0"
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "**/*.cjs",
-    "**/*.js",
-    "src/reset.d.ts"
-  ],
+  "include": ["**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.js", "src/reset.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

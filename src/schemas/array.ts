@@ -23,7 +23,9 @@ const arrayParse =
     }
 
     const mapped = await Promise.allSettled(
-      dirents.okValue.map(async (dirent) => element.parse(getPath(dirent))),
+      dirents.okValue.map(async (dirent) =>
+        element.parse(getPath(dirent, path)),
+      ),
     );
     const filtered = mapped.filter(
       (
