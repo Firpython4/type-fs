@@ -1,8 +1,8 @@
-import { expect, test } from "vitest";
+import { expect, test, vitest } from "vitest";
 import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
-import {toPath} from "~/fileManagement";
-import {typefs} from "~/schemas";
+import { toPath } from "~/fileManagement";
+import { typefs } from "~/schemas";
 import { couldNotReadDirectory } from "~/types";
 
 test("arrayTest1: The array schema should parse an array of urls", async () => {
@@ -11,7 +11,9 @@ test("arrayTest1: The array schema should parse an array of urls", async () => {
     .createFile(toPath("b.url"), "https://youtube.com");
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const arrayResult = await typefs.array(typefs.url()).parse(fileMocker.getCurrentDirectory());
+    const arrayResult = await typefs
+      .array(typefs.url())
+      .parse(fileMocker.getCurrentDirectory());
     expect(arrayResult.wasResultSuccessful).toBeTruthy();
     if (!arrayResult.wasResultSuccessful) {
       throw new Error(arrayResult.errorValue);
@@ -23,24 +25,29 @@ test("arrayTest1: The array schema should parse an array of urls", async () => {
 });
 
 test("arrayTest2: The array schema should parse an array of objects", async () => {
-    const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest2"))
-      .createDirectory(toPath("object"))
-      .createFile(toPath("a.url"), "https://www.google.com")
-      .goBack()
-      .createDirectory(toPath("object2"))
-      .createFile(toPath("b.url"), "https://youtube.com");
+  const fileMocker = createFileMocker(toPath("test-resources/array/arrayTest2"))
+    .createDirectory(toPath("object"))
+    .createFile(toPath("a.url"), "https://www.google.com")
+    .goBack()
+    .createDirectory(toPath("object2"))
+    .createFile(toPath("b.url"), "https://youtube.com");
 
-    await usingFileMockerAsync(fileMocker, async () => {
-      const arrayResult = await typefs.array(typefs.object({
-        url: typefs.url()
-      })).parse(fileMocker.getCurrentDirectory());
-      expect(arrayResult.wasResultSuccessful).toBeTruthy();
-    });
-  }
-);
+  await usingFileMockerAsync(fileMocker, async () => {
+    const arrayResult = await typefs
+      .array(
+        typefs.object({
+          url: typefs.url(),
+        }),
+      )
+      .parse(fileMocker.getCurrentDirectory());
+    expect(arrayResult.wasResultSuccessful).toBeTruthy();
+  });
+});
 
 test("arrayTest3: The array schema parsing should fail if the directory does not exist", async () => {
-  const arrayResult = await typefs.array(typefs.url()).parse(toPath("test-resources/array/doesNotExist"));
+  const arrayResult = await typefs
+    .array(typefs.url())
+    .parse(toPath("test-resources/array/doesNotExist"));
   if (arrayResult.wasResultSuccessful) {
     throw new Error("Expected error");
   }
@@ -54,7 +61,10 @@ test("arrayTest4: An array schema with a name should parse an array of urls", as
     .createFile(toPath("b.url"), "https://youtube.com");
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const arrayResult = await typefs.array(typefs.url()).withName("arrayTest4").parse(fileMocker.getCurrentDirectory());
+    const arrayResult = await typefs
+      .array(typefs.url())
+      .withName("arrayTest4")
+      .parse(fileMocker.getCurrentDirectory());
     expect(arrayResult.wasResultSuccessful).toBeTruthy();
     if (!arrayResult.wasResultSuccessful) {
       throw new Error(arrayResult.errorValue);
@@ -71,10 +81,61 @@ test("arrayTest5: An array schema with a name should fail if the file does not m
     .createFile(toPath("b.url"), "https://youtube.com");
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const arrayResult = await typefs.array(typefs.url()).withName("wrong-name").parse(fileMocker.getCurrentDirectory());
+    const arrayResult = await typefs
+      .array(typefs.url())
+      .withName("wrong-name")
+      .parse(fileMocker.getCurrentDirectory());
     if (arrayResult.wasResultSuccessful) {
       throw new Error("Expected error");
     }
     expect(arrayResult.errorValue).toBe("name does not match");
+  });
+});
+
+test("arrayTest6: An array schema with optional should parse", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/array/arrayTest6"),
+  ).createFile(toPath("a.url"), "https://www.google.com");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const arrayResult = await typefs
+      .array(typefs.url())
+      .optional()
+      .parse(fileMocker.getCurrentDirectory());
+    expect(arrayResult.wasResultSuccessful).toBeTruthy();
+    if (!arrayResult.wasResultSuccessful) {
+      throw new Error(String(arrayResult.errorValue));
+    }
+    expect(arrayResult.okValue.length).toBe(1);
+  });
+});
+
+test("arrayTest7: An array schema with error handler should call handler on error", async () => {
+  const spy = vitest.fn();
+  const arrayResult = await typefs
+    .array(typefs.url())
+    .withErrorHandler(spy)
+    .parse(toPath("test-resources/array/doesNotExist"));
+
+  if (arrayResult.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+  expect(spy).toHaveBeenCalled();
+});
+
+test("arrayTest8: Array schema should handle all elements failing to parse", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/array/arrayTest8"),
+  ).createFile(toPath("a.txt"), "not a url");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const arrayResult = await typefs
+      .array(typefs.url())
+      .parse(fileMocker.getCurrentDirectory());
+    expect(arrayResult.wasResultSuccessful).toBeTruthy();
+    if (!arrayResult.wasResultSuccessful) {
+      throw new Error(String(arrayResult.errorValue));
+    }
+    expect(arrayResult.okValue.length).toBe(0);
   });
 });

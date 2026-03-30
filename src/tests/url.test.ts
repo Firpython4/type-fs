@@ -1,7 +1,7 @@
 import { toPath } from "~/fileManagement";
 import { createFileMocker } from "~/tests/shared/mocking/fileMocking";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
-import { expect, test } from "vitest";
+import { expect, test, vitest } from "vitest";
 import { typefs } from "~/schemas";
 import { getUrl } from "~/schemas/url";
 
@@ -120,4 +120,34 @@ test("getUrl: Should read URL content from file", async () => {
     const result = await getUrl(fileMocker.getCurrentFile());
     expect(result).toBe("https://www.example.com");
   });
+});
+
+test("urlTest7: URL schema with optional should parse", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/url/urlTest7"),
+  ).createFile(toPath("valid.url"), "https://www.google.com");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const urlSchema = typefs.url().optional();
+    const result = await urlSchema.parse(fileMocker.getCurrentFile());
+
+    expect(result.wasResultSuccessful).toBeTruthy();
+    if (!result.wasResultSuccessful) {
+      throw new Error(String(result.errorValue));
+    }
+    expect(result.okValue.url).toBe("https://www.google.com");
+  });
+});
+
+test("urlTest8: URL schema with error handler should call handler on error", async () => {
+  const spy = vitest.fn();
+  const urlSchema = typefs.url().withErrorHandler(spy);
+  const result = await urlSchema.parse(
+    toPath("test-resources/url/doesNotExist.url"),
+  );
+
+  if (result.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+  expect(spy).toHaveBeenCalled();
 });

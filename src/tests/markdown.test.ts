@@ -236,3 +236,102 @@ test("markdownTest12: Markdown with matter should fail for non-markdown extensio
     expect(markdownResult.errorValue).toBe("no matches");
   });
 });
+
+test("markdownTest13: Markdown with optional should parse", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest13");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "# Hello World",
+  );
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .optional()
+      .parse(fileMocker.getCurrentFile());
+
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error(String(markdownResult.errorValue));
+    }
+    expect(markdownResult.okValue.name).toBe("test");
+  });
+});
+
+test("markdownTest14: Markdown with matter and optional should parse", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest14");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "---\ntitle: Hello\n---\n# Content",
+  );
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .withMatter(z.object({ title: z.string() }))
+      .optional()
+      .parse(fileMocker.getCurrentFile());
+
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error(String(markdownResult.errorValue));
+    }
+    expect(markdownResult.okValue.matters.title).toBe("Hello");
+  });
+});
+
+test("markdownTest15: Markdown with matter and error handler should call handler on error", async () => {
+  const spy = vitest.fn();
+  const markdownResult = await typefs
+    .markdown()
+    .withMatter(z.object({ title: z.string() }))
+    .withErrorHandler(spy)
+    .parse(toPath("test-resources/markdown/doesNotExist/test.md"));
+
+  if (markdownResult.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+  expect(spy).toHaveBeenCalled();
+});
+
+test("markdownTest16: Markdown with matter should handle newline replacement", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest16");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "---\ntitle: Line1\\nLine2\n---\n# Content",
+  );
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .withMatter(z.object({ title: z.string() }))
+      .parse(fileMocker.getCurrentFile());
+
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error(String(markdownResult.errorValue));
+    }
+    expect(markdownResult.okValue.matters.title).toBe("Line1\nLine2");
+  });
+});
+
+test("markdownTest16: Markdown with matter should handle newline replacement", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest16");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "---\ntitle: Line1\\nLine2\n---\n# Content",
+  );
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .withMatter(z.object({ title: z.string() }))
+      .parse(fileMocker.getCurrentFile());
+
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error(String(markdownResult.errorValue));
+    }
+    expect(markdownResult.okValue.matters.title).toBe("Line1\nLine2");
+  });
+});
