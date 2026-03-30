@@ -85,4 +85,11 @@ export const object = <T extends TfsRecord>(fields: T): TfsObject<T> => {
 export const __testExports__ = {
   objectParse,
   object,
+  createObjectParser,
 };
+
+export function createObjectParser<T extends TfsRecord>(
+  fields: T,
+): Parser<InferTfsObject<T>, typeof couldNotReadDirectory | "no matches"> {
+  return objectParse(fields);
+}

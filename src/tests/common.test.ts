@@ -4,7 +4,13 @@ import { toPath } from "~/fileManagement";
 import { typefs } from "~/schemas";
 import { z } from "zod";
 
-const { errorHandler, withNameHandler, optionalWrapper } = __testExports__;
+const {
+  errorHandler,
+  withNameHandler,
+  optionalWrapper,
+  createMockParser,
+  createFailingParser,
+} = __testExports__;
 
 describe("getName", () => {
   test("should extract name from path without extension", () => {
@@ -173,5 +179,66 @@ describe("withNameHandler", () => {
     if (result.wasResultSuccessful) {
       expect(result.okValue.name).toBe("test");
     }
+  });
+});
+
+describe("createMockParser", () => {
+  test("should create a mock parser that returns success", async () => {
+    const mock = createMockParser("test value");
+    const result = await mock.parse(toPath("test.txt"));
+    expect(result.wasResultSuccessful).toBe(true);
+    expect(result.okValue).toBe("test value");
+  });
+
+  test("should have isOptional false by default", () => {
+    const mock = createMockParser("test");
+    expect(mock.isOptional).toBe(false);
+  });
+
+  test("should have isOptional true when specified", () => {
+    const mock = createMockParser("test", true);
+    expect(mock.isOptional).toBe(true);
+  });
+
+  test("should allow chaining withName", async () => {
+    const mock = createMockParser("test");
+    const named = mock.withName("test");
+    const result = await named.parse(toPath("test.txt"));
+    expect(result.wasResultSuccessful).toBe(true);
+  });
+
+  test("should return error when name doesn't match pattern", async () => {
+    const mock = createMockParser("test");
+    const named = mock.withName("wrong");
+    const result = await named.parse(toPath("test.txt"));
+    expect(result.wasResultSuccessful).toBe(false);
+    expect(result.errorValue).toBe("name does not match");
+  });
+
+  test("should allow chaining optional", () => {
+    const mock = createMockParser("test");
+    const optional = mock.optional();
+    expect(optional.isOptional).toBe(true);
+  });
+});
+
+describe("createFailingParser", () => {
+  test("should create a mock parser that returns error", async () => {
+    const mock = createFailingParser("error value");
+    const result = await mock.parse(toPath("test.txt"));
+    expect(result.wasResultSuccessful).toBe(false);
+    expect(result.errorValue).toBe("error value");
+  });
+
+  test("should allow chaining withName", () => {
+    const mock = createFailingParser("error");
+    const named = mock.withName("pattern");
+    expect(named).toBeDefined();
+  });
+
+  test("should allow chaining withErrorHandler", () => {
+    const mock = createFailingParser("error");
+    const withError = mock.withErrorHandler(() => {});
+    expect(withError).toBeDefined();
   });
 });

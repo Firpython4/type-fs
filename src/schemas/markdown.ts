@@ -71,6 +71,13 @@ const parseMarkdownWithContent =
     }
   };
 
+export const validateMatterData = <T extends ZodRawShape>(
+  data: unknown,
+  schema: ZodObject<T>,
+): boolean => {
+  return schema.safeParse(data).success;
+};
+
 const withMatter: MarkdownWithMatter =
   () =>
   <T extends ZodRawShape>(matters: ZodObject<T>) => {
@@ -121,4 +128,5 @@ export const markdown = (): TfsMarkdown => {
 export const __testExports__ = {
   parseMarkdown,
   markdown,
+  validateMatterData,
 };

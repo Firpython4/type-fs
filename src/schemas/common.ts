@@ -84,4 +84,47 @@ export const __testExports__ = {
   withNameHandler,
   optionalWrapper,
   getName,
+  createMockParser,
+  createFailingParser,
 };
+
+export function createMockParser<T>(okValue: T, isOptional = false) {
+  const mockParser = {
+    parse: async () => ({ wasResultSuccessful: true, okValue }),
+    withErrorHandler: (handler: any) => mockParser,
+    withName: (namePattern?: string) => {
+      const named = {
+        ...mockParser,
+        parse: async (inPath: Path) => {
+          const name = getName(inPath);
+          const matches = namePattern ? name.match(namePattern) : null;
+          if (namePattern && matches === null) {
+            return {
+              wasResultSuccessful: false,
+              errorValue: "name does not match",
+            };
+          }
+          return {
+            wasResultSuccessful: true,
+            okValue: { name, parsed: okValue },
+          };
+        },
+        optional: () => createMockParser(okValue, true),
+      };
+      return named;
+    },
+    optional: () => createMockParser(okValue, true),
+    isOptional,
+  };
+  return mockParser;
+}
+
+export function createFailingParser<T>(errorValue: T) {
+  return {
+    parse: async () => ({ wasResultSuccessful: false, errorValue }),
+    withErrorHandler: (handler: any) => createFailingParser(errorValue),
+    withName: () => createFailingParser(errorValue),
+    optional: () => createFailingParser(errorValue),
+    isOptional: false,
+  };
+}

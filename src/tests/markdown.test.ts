@@ -355,3 +355,19 @@ test.skip("markdownTest17: Markdown with matter should fail when safeParse retur
     expect(markdownResult.errorValue).toBe("invalid matter");
   });
 });
+
+import { __testExports__ as markdownExports } from "~/schemas/markdown";
+
+test("validateMatterData: Should return true for valid data", () => {
+  const { validateMatterData } = markdownExports;
+  const schema = z.object({ title: z.string() });
+  const result = validateMatterData({ title: "Hello" }, schema);
+  expect(result).toBe(true);
+});
+
+test("validateMatterData: Should return false for invalid data", () => {
+  const { validateMatterData } = markdownExports;
+  const schema = z.object({ title: z.string() });
+  const result = validateMatterData({ title: 123 }, schema);
+  expect(result).toBe(false);
+});
