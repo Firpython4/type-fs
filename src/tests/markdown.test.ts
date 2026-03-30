@@ -3,15 +3,19 @@ import { readFileSafe, toPath } from "~/fileManagement";
 import { usingFileMockerAsync } from "~/tests/shared/mocking/useFileMocker";
 import { expect, test, vitest } from "vitest";
 import { z } from "zod";
-import {typefs} from "~/schemas";
+import { typefs } from "~/schemas";
 
 test("markdownTest1: The markdown schema should parse a markdown file", async () => {
   const inPath = toPath("test-resources/markdown/markdownTest1");
-  const fileMocker = createFileMocker(inPath)
-    .createFile(toPath("test.md"), "# Hello World");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "# Hello World",
+  );
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const markdownResult = await typefs.markdown().parse(fileMocker.getCurrentFile());
+    const markdownResult = await typefs
+      .markdown()
+      .parse(fileMocker.getCurrentFile());
     expect(markdownResult.wasResultSuccessful).toBeTruthy();
     if (!markdownResult.wasResultSuccessful) {
       throw new Error(markdownResult.errorValue);
@@ -29,11 +33,14 @@ test("markdownTest1: The markdown schema should parse a markdown file", async ()
 
 test("markdownTest2: The markdown schema should parse a markdown file with matter", async () => {
   const inPath = toPath("test-resources/markdown/markdownTest2");
-  const fileMocker = createFileMocker(inPath)
-    .copyFile(toPath("test-resources/markdownWithMatter.md"), toPath("test.md"));
+  const fileMocker = createFileMocker(inPath).copyFile(
+    toPath("test-resources/markdownWithMatter.md"),
+    toPath("test.md"),
+  );
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const markdownResult = await typefs.markdown()
+    const markdownResult = await typefs
+      .markdown()
       .withMatter(z.object({ title: z.string() }))
       .parse(fileMocker.getCurrentFile());
     expect(markdownResult.wasResultSuccessful).toBeTruthy();
@@ -48,7 +55,9 @@ test("markdownTest2: The markdown schema should parse a markdown file with matte
 });
 
 test("markdownTest3: The markdown schema should fail if the file does not exist", async () => {
-  const markdownResult = await typefs.markdown().parse(toPath("test-resources/markdown/doesNotExist/test.md"));
+  const markdownResult = await typefs
+    .markdown()
+    .parse(toPath("test-resources/markdown/doesNotExist/test.md"));
   if (markdownResult.wasResultSuccessful) {
     throw new Error("Expected error");
   }
@@ -57,11 +66,14 @@ test("markdownTest3: The markdown schema should fail if the file does not exist"
 });
 
 test("markdownTest4: The markdown schema should fail if the file is not a markdown file", async () => {
-  const fileMocker = createFileMocker(toPath("test-resources/markdown/markdownTest4"))
-    .createFile(toPath("notAMarkdown.txt"), "Hello World");
+  const fileMocker = createFileMocker(
+    toPath("test-resources/markdown/markdownTest4"),
+  ).createFile(toPath("notAMarkdown.txt"), "Hello World");
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const markdownResult = await typefs.markdown().parse(fileMocker.getCurrentFile());
+    const markdownResult = await typefs
+      .markdown()
+      .parse(fileMocker.getCurrentFile());
     if (markdownResult.wasResultSuccessful) {
       throw new Error("Expected error");
     }
@@ -72,11 +84,16 @@ test("markdownTest4: The markdown schema should fail if the file is not a markdo
 
 test("markdownTest5: A markdown schema with a name should parse a markdown file with the given name", async () => {
   const inPath = toPath("test-resources/markdown/markdownTest5");
-  const fileMocker = createFileMocker(inPath)
-    .createFile(toPath("test.md"), "# Hello World");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "# Hello World",
+  );
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const markdownResult = await typefs.markdown().withName("test").parse(fileMocker.getCurrentFile());
+    const markdownResult = await typefs
+      .markdown()
+      .withName("test")
+      .parse(fileMocker.getCurrentFile());
     expect(markdownResult.wasResultSuccessful).toBeTruthy();
     if (!markdownResult.wasResultSuccessful) {
       throw new Error(markdownResult.errorValue);
@@ -87,11 +104,16 @@ test("markdownTest5: A markdown schema with a name should parse a markdown file 
 
 test("markdownTest6: A markdown schema with a name should fail if the file does not match the name pattern", async () => {
   const inPath = toPath("test-resources/markdown/markdownTest6");
-  const fileMocker = createFileMocker(inPath)
-    .createFile(toPath("test.md"), "# Hello World");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "# Hello World",
+  );
 
   await usingFileMockerAsync(fileMocker, async () => {
-    const markdownResult = await typefs.markdown().withName("notTest").parse(fileMocker.getCurrentFile());
+    const markdownResult = await typefs
+      .markdown()
+      .withName("notTest")
+      .parse(fileMocker.getCurrentFile());
     if (markdownResult.wasResultSuccessful) {
       throw new Error("Expected error");
     }
@@ -102,12 +124,15 @@ test("markdownTest6: A markdown schema with a name should fail if the file does 
 
 test("markdownTest7: A markdown schema with an error handler should parse a markdown file with the given name", async () => {
   const inPath = toPath("test-resources/markdown/markdownTest7");
-  const fileMocker = createFileMocker(inPath)
-    .createFile(toPath("test.md"), "# Hello World");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "# Hello World",
+  );
 
   await usingFileMockerAsync(fileMocker, async () => {
     const spy = vitest.fn();
-    const markdownResult = await typefs.markdown()
+    const markdownResult = await typefs
+      .markdown()
       .withErrorHandler(spy)
       .withName("test")
       .parse(fileMocker.getCurrentFile());
@@ -126,7 +151,8 @@ test("markdownTest7: A markdown schema with an error handler should parse a mark
 test("markdownTest8: A markdown schema with an error handler should fail and call the error handler if the file does not exist", async () => {
   const spy = vitest.fn();
 
-  const markdownResult = await typefs.markdown()
+  const markdownResult = await typefs
+    .markdown()
     .withName("test")
     .withErrorHandler(spy)
     .parse(toPath("test-resources/markdown/doesNotExist/test.md"));
@@ -136,4 +162,77 @@ test("markdownTest8: A markdown schema with an error handler should fail and cal
   }
 
   expect(spy).toHaveBeenCalled();
+});
+
+test("markdownTest9: Markdown with matter should fail if file does not exist", async () => {
+  const markdownResult = await typefs
+    .markdown()
+    .withMatter(z.object({ title: z.string() }))
+    .parse(toPath("test-resources/markdown/doesNotExist/test.md"));
+
+  if (markdownResult.wasResultSuccessful) {
+    throw new Error("Expected error");
+  }
+
+  expect(markdownResult.errorValue).toBe("could not read file");
+});
+
+test("markdownTest10: Markdown with matter should handle non-string matter values", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/markdown/markdownTest10"),
+  ).createFile(
+    toPath("test.md"),
+    "---\ntitle: Hello\ncount: 5\n---\n# Content",
+  );
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .withMatter(z.object({ title: z.string(), count: z.number() }))
+      .parse(fileMocker.getCurrentFile());
+
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error(markdownResult.errorValue);
+    }
+    expect(markdownResult.okValue.matters.title).toBe("Hello");
+    expect(markdownResult.okValue.matters.count).toBe(5);
+  });
+});
+
+test("markdownTest11: Markdown with matter should handle numeric values in schema", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/markdown/markdownTest11"),
+  ).createFile(toPath("test.md"), "---\ncount: 42\n---\n# Content");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .withMatter(z.object({ count: z.number() }))
+      .parse(fileMocker.getCurrentFile());
+
+    expect(markdownResult.wasResultSuccessful).toBeTruthy();
+    if (!markdownResult.wasResultSuccessful) {
+      throw new Error(markdownResult.errorValue);
+    }
+    expect(markdownResult.okValue.matters.count).toBe(42);
+  });
+});
+
+test("markdownTest12: Markdown with matter should fail for non-markdown extension", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/markdown/markdownTest12"),
+  ).createFile(toPath("test.txt"), "Some content");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .withMatter(z.object({ title: z.string() }))
+      .parse(fileMocker.getCurrentFile());
+
+    if (markdownResult.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+    expect(markdownResult.errorValue).toBe("no matches");
+  });
 });

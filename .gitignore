@@ -49,3 +49,4 @@ public/**/nextImageExportOptimizer
 
 #build
 /dist/
+.stryker-tmp

@@ -1,0 +1,32 @@
+{
+  "$schema": "./node_modules/@stryker-mutator/core/schema/stryker-schema.json",
+  "mutator": {
+    "excludedMutations": [
+      "arcson",
+      "equality",
+      "string",
+      "array",
+      "object",
+      "boolean",
+      "conditional",
+      "someClassInstanceMembers",
+      "arrow",
+      "block",
+      "classProperties",
+      "stringLiteral"
+    ]
+  },
+  "testRunner": "vitest",
+  "vitest": {
+    "configFile": "vitest.config.ts"
+  },
+  "coverageAnalysis": "perTest",
+  "ignoreStatic": true,
+  "plugins": ["@stryker-mutator/vitest-runner"],
+  "mutate": [
+    "src/schemas/**/*.ts",
+    "src/fileManagement.ts",
+    "src/typeSafety.ts",
+    "src/result.ts"
+  ]
+}
