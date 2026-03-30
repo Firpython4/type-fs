@@ -1,8 +1,6 @@
 import { expect, test, describe, vitest } from "vitest";
 import { getName, __testExports__ } from "~/schemas/common";
 import { toPath } from "~/fileManagement";
-import { typefs } from "~/schemas";
-import { z } from "zod";
 
 const {
   errorHandler,

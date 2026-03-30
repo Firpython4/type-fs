@@ -91,7 +91,7 @@ export const __testExports__ = {
 export function createMockParser<T>(okValue: T, isOptional = false) {
   const mockParser = {
     parse: async () => ({ wasResultSuccessful: true, okValue }),
-    withErrorHandler: (handler: any) => mockParser,
+    withErrorHandler: (_handler: (error: unknown) => void) => mockParser,
     withName: (namePattern?: string) => {
       const named = {
         ...mockParser,
@@ -122,7 +122,8 @@ export function createMockParser<T>(okValue: T, isOptional = false) {
 export function createFailingParser<T>(errorValue: T) {
   return {
     parse: async () => ({ wasResultSuccessful: false, errorValue }),
-    withErrorHandler: (handler: any) => createFailingParser(errorValue),
+    withErrorHandler: (_handler: (error: T) => void) =>
+      createFailingParser(errorValue),
     withName: () => createFailingParser(errorValue),
     optional: () => createFailingParser(errorValue),
     isOptional: false,

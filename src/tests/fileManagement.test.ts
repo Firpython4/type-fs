@@ -1,4 +1,4 @@
-import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
+import { expect, test, describe, beforeEach, afterEach } from "vitest";
 import {
   toPath,
   getFileRelative,
