@@ -1,7 +1,7 @@
 # type-fs
 
 [![npm](https://img.shields.io/npm/v/@firpy/type-fs)](https://www.npmjs.com/package/@firpy/type-fs)
-[![GitHub](https://img.shields.io/github/license/Firpython4/type-fs)](https://github.com/Firpython4/type-fs)
+[![github-repo](https://img.shields.io/badge/github-repo-blue?logo=github)](https://github.com/Firpython4/type-fs)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A file system parser and validator with full type inference. Inspired by Zod.
