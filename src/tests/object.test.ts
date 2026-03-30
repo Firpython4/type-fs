@@ -216,3 +216,46 @@ test("objectTest8: Object schema with error handler should call handler on error
   }
   expect(spy).toHaveBeenCalled();
 });
+
+test.skip("objectTest9: Object schema with optional then name should work", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/object/objectTest9"),
+  ).createFile(toPath("a.url"), "https://www.google.com");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const objectResult = await typefs
+      .object({
+        url: typefs.url().optional(),
+      })
+      .withName("objectTest9")
+      .parse(fileMocker.getCurrentDirectory());
+
+    expect(objectResult.wasResultSuccessful).toBeTruthy();
+    if (!objectResult.wasResultSuccessful) {
+      throw new Error(String(objectResult.errorValue));
+    }
+    expect(objectResult.okValue.url!.url).toBe("https://www.google.com");
+  });
+});
+
+test.skip("objectTest10: Object schema with name then optional should work", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/object/objectTest10"),
+  ).createFile(toPath("a.url"), "https://www.google.com");
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const objectResult = await typefs
+      .object({
+        url: typefs.url(),
+      })
+      .withName("objectTest10")
+      .optional()
+      .parse(fileMocker.getCurrentDirectory());
+
+    expect(objectResult.wasResultSuccessful).toBeTruthy();
+    if (!objectResult.wasResultSuccessful) {
+      throw new Error(String(objectResult.errorValue));
+    }
+    expect(objectResult.okValue.url!.url).toBe("https://www.google.com");
+  });
+});

@@ -335,3 +335,23 @@ test("markdownTest16: Markdown with matter should handle newline replacement", a
     expect(markdownResult.okValue.matters.title).toBe("Line1\nLine2");
   });
 });
+
+test.skip("markdownTest17: Markdown with matter should fail when safeParse returns false", async () => {
+  const inPath = toPath("test-resources/markdown/markdownTest17");
+  const fileMocker = createFileMocker(inPath).createFile(
+    toPath("test.md"),
+    "---invalid yaml---\n# Content",
+  );
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const markdownResult = await typefs
+      .markdown()
+      .withMatter(z.object({ title: z.string() }))
+      .parse(fileMocker.getCurrentFile());
+
+    if (markdownResult.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+    expect(markdownResult.errorValue).toBe("invalid matter");
+  });
+});

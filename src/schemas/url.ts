@@ -53,3 +53,9 @@ export const url = (): TfsUrl => {
   };
   return schema;
 };
+
+export const __testExports__ = {
+  getUrl,
+  getUrlFromPath,
+  url,
+};

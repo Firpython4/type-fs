@@ -78,3 +78,10 @@ export function optionalWrapper<T extends TfsValue<OkType, unknown>, OkType>(
 export function getName(inPath: Path) {
   return path.basename(inPath, path.extname(inPath));
 }
+
+export const __testExports__ = {
+  errorHandler,
+  withNameHandler,
+  optionalWrapper,
+  getName,
+};

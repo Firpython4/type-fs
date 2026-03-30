@@ -117,3 +117,8 @@ export const markdown = (): TfsMarkdown => {
 
   return schema;
 };
+
+export const __testExports__ = {
+  parseMarkdown,
+  markdown,
+};

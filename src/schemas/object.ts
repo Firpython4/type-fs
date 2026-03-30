@@ -81,3 +81,8 @@ export const object = <T extends TfsRecord>(fields: T): TfsObject<T> => {
 
   return schema;
 };
+
+export const __testExports__ = {
+  objectParse,
+  object,
+};
