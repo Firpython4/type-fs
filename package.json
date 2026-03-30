@@ -1,7 +1,25 @@
 {
-  "name": "type-fs",
+  "name": "@firpy/type-fs",
   "version": "0.1.0",
-  "private": true,
+  "description": "TypeScript types for file system operations",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas.d.ts",
+      "import": "./dist/schemas.mjs",
+      "require": "./dist/schemas.js"
+    }
+  },
   "type": "module",
   "dependencies": {
     "@types/node": "^25.5.0",
