@@ -1,10 +1,10 @@
 {
   "name": "@firpy/type-fs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "license": "MIT",
   "description": "TypeScript types for file system operations",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
@@ -13,13 +13,13 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./schemas": {
       "types": "./dist/schemas.d.ts",
-      "import": "./dist/schemas.mjs",
-      "require": "./dist/schemas.js"
+      "import": "./dist/schemas.js",
+      "require": "./dist/schemas.cjs"
     }
   },
   "type": "module",
