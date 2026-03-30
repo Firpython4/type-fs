@@ -1,6 +1,6 @@
 {
   "name": "@firpy/type-fs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript types for file system operations",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
