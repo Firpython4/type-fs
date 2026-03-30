@@ -200,3 +200,51 @@ test("imageTest10: Should fail when linkCutoff is not in path", async () => {
     expect(result.errorValue).toBe("image is not in the configured folder");
   });
 });
+
+test("imageTest11: Should fail when sizeOfAsync returns error result", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/image/imageTest11"),
+  ).copyFile(
+    toPath("test-resources/gratisography-cool-cat.jpg"),
+    toPath("test.jpg"),
+  );
+
+  vi.spyOn(fileManagement, "sizeOfAsync").mockResolvedValue({
+    wasResultSuccessful: false,
+    errorValue: "custom error",
+  } as any);
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const imageResult = await typefs.image().parse(fileMocker.getCurrentFile());
+    if (imageResult.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+    expect(imageResult.errorValue).toContain("Unable to read file");
+  });
+
+  vi.restoreAllMocks();
+});
+
+test("imageTest12: Should fail when sizeOfAsync returns null value", async () => {
+  const fileMocker = createFileMocker(
+    toPath("test-resources/image/imageTest12"),
+  ).copyFile(
+    toPath("test-resources/gratisography-cool-cat.jpg"),
+    toPath("test.jpg"),
+  );
+
+  vi.spyOn(fileManagement, "sizeOfAsync").mockResolvedValue({
+    wasResultSuccessful: true,
+    okValue: null,
+  } as any);
+
+  await usingFileMockerAsync(fileMocker, async () => {
+    const imageResult = await typefs.image().parse(fileMocker.getCurrentFile());
+    if (imageResult.wasResultSuccessful) {
+      throw new Error("Expected error");
+    }
+    expect(imageResult.errorValue).toContain("Unable to read file");
+  });
+
+  vi.restoreAllMocks();
+});
