@@ -1,5 +1,8 @@
 # type-fs
 
+[![npm](https://img.shields.io/npm/v/@firpy/type-fs)](https://www.npmjs.com/package/@firpy/type-fs)
+[![GitHub](https://img.shields.io/github/license/Firpython4/type-fs)](https://github.com/Firpython4/type-fs)
+
 A file system parser and validator with full type inference. Inspired by Zod. Currently under development.
 
 This package is mainly being used as a library for file-based content management systems on my other projects.
@@ -15,12 +18,10 @@ const videoOrImageSchema = typefs.union(typefs.image("public/"), typefs.url());
 async function example() {
   const parseResult = await videoOrImageSchema.parse(safePath("video.url"));
   if (parseResult.wasResultSuccessful) {
-
     //Inferred as a discriminated union of Image and Url
     const videoOrImage = parseResult.okValue;
 
     if (videoOrImage.option === 0) {
-
       /* Both are inferred as numbers because
       videoOrImage.value is inferred as an Image */
       const [width, height] = [
@@ -30,7 +31,6 @@ async function example() {
 
       console.log(width, height);
     } else {
-
       //videoOrImage.value is inferred as a Url
       const videoUrl = videoOrImage.value.url;
 
@@ -50,7 +50,6 @@ async function example() {
   const video = await videoUrls.parse(safePath("videos"));
 
   if (video.wasResultSuccessful) {
-
     //Inferred as Url[]
     const videoUrls = video.okValue.parsed;
 
